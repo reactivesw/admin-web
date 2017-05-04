@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "es6", // write es6 code, compile to es5
+      "dom"
+    ],
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "sourceMap": true,
+    // the following three options are recommended by
+    // https://vuejs.org/v2/guide/typescript.html to allow ES module
+    "allowSyntheticDefaultImports": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+
+    // to use the @Component decorate
+    // https://github.com/vuejs/vue-class-component#vue-class-component
+    "experimentalDecorators": true,
+
+    // use absolute path in ts file
+    "baseUrl": "./",
+    "typeRoots": [
+      // required for local type definition such as FB
+      "./typings",
+      // required for node type definitioin such as require
+      "./node_modules/@types"
+    ]
+  }
+}

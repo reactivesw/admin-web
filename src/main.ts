@@ -3,9 +3,14 @@
 import Vue from 'vue'
 import App from 'src/components/App'
 
+import 'bootstrap/dist/js/bootstrap'
+import './styles/style.scss'
+
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
+import setLocales from './infrastructure/i18n'
+setLocales(Vue)
+
 new Vue({
   el: '#app',
   template: '<App/>',

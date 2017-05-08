@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="content-wrapper">
+  <div id="app" class="container-fluid">
     <i class="fa fa-space-shuttle fa-5x"></i>
     <hello></hello>
   </div>

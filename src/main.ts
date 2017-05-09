@@ -11,8 +11,11 @@ Vue.config.productionTip = false
 import setLocales from './infrastructure/i18n'
 setLocales(Vue)
 
+import router from './infrastructure/router'
+
 new Vue({
   el: '#app',
   template: '<App/>',
+  router,
   components: { App }
 })

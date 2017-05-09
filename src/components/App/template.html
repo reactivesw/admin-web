@@ -1,17 +1,27 @@
 <div id="app" class="container-fluid">
   <HomeHeader></HomeHeader>
   <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-2">
       <nav class="nav flex-column nav-pills">
-        <a class="nav-link active" href="#">Categories</a>
-        <a class="nav-link" href="#">Product Types</a>
-        <a class="nav-link" href="#">Products</a>
-        <a class="nav-link" href="#">Orders</a>
-        <a class="nav-link" href="#">Customers</a>
+        <router-link class="nav-link" active-class="active" :to="{ name: 'categories' }">
+          Categories
+        </router-link>
+        <router-link class="nav-link" active-class="active" :to="{ name: 'product-types' }">
+          Product Types
+        </router-link>
+        <router-link class="nav-link" active-class="active" :to="{ name: 'products' }">
+          Products
+        </router-link>
+        <router-link class="nav-link" active-class="active" :to="{ name: 'orders' }">
+          Orders
+        </router-link>
+        <router-link class="nav-link" active-class="active" :to="{ name: 'customers' }">
+          Customers
+        </router-link>
       </nav>
     </div>
-    <div class="col-sm-9">
-      <h1>Welcome to Categories</h1>
+    <div class="col-sm-10">
+      <router-view></router-view>
     </div>
   </div>
 </div>

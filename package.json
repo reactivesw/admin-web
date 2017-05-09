@@ -15,7 +15,8 @@
     "jquery": "^3.2.1",
     "tether": "^1.4.0",
     "vue": "^2.3.2",
-    "vue-i18n": "5.0.3"
+    "vue-i18n": "5.0.3",
+    "vue-router": "^2.5.3"
   },
   "devDependencies": {
     "@types/node": "^7.0.18",

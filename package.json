@@ -42,6 +42,7 @@
     "ts-loader": "^2.0.3",
     "typescript": "^2.3.2",
     "url-loader": "^0.5.8",
+    "vue-class-component": "^5.0.1",
     "vue-loader": "^11.3.4",
     "vue-style-loader": "^2.0.5",
     "vue-template-compiler": "^2.2.6",

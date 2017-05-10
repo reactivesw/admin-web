@@ -1,3 +1,4 @@
 <div id="category">
-  <h1>Manage Categories</h1>
+  <CategoryTree v-if="showCategoryTree"></CategoryTree>
+  <OneCategory v-if="showOneCategory"></OneCategory>
 </div>

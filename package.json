@@ -10,13 +10,15 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.16.1",
     "bootstrap": "4.0.0-alpha.6",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "tether": "^1.4.0",
     "vue": "^2.3.2",
     "vue-i18n": "5.0.3",
-    "vue-router": "^2.5.3"
+    "vue-router": "^2.5.3",
+    "vuex": "^2.3.1"
   },
   "devDependencies": {
     "@types/node": "^7.0.18",

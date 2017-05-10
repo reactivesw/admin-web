@@ -3,22 +3,29 @@ import Component from 'vue-class-component'
 
 import { FETCH_CATEGORIES } from './store/actions'
 import { GET_CATEGORIES } from './store/getters'
+import { ApiResult } from 'src/infrastructure/api_client'
+
 @Component({
 })
 export default class CategoryTree extends Vue {
   isLoading = true
-  netError = null
+  error: string | undefined = undefined
 
   created() {
-    this.isLoading = true
     this.$store.dispatch(FETCH_CATEGORIES)
   }
 
   get categories() {
-    const netData = this.$store.getters[GET_CATEGORIES]
-    if (netData) {
+    let retVal: object | undefined = undefined
+    const result: ApiResult = this.$store.getters[GET_CATEGORIES]
+    if (result) {
       this.isLoading = false
-    }  
-    return netData
+      if (result.error) {
+        this.error = result.error
+      } else {
+        retVal = result.data
+      }
+    }
+    return retVal
   }
 }

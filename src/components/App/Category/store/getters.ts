@@ -1,4 +1,4 @@
-export const GET_CATEGORIES = 'categoryTree/GET_CATEGORIES'
+export const GET_CATEGORIES = 'category/GET_CATEGORIES'
 
 const getters = {
   [GET_CATEGORIES](state) {

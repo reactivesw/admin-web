@@ -1,4 +1,4 @@
-export const SET_CATEGORIES = 'categoryTree/SET_CATEGORIES'
+export const SET_CATEGORIES = 'category/SET_CATEGORIES'
 export const INITIAL_CATEGROIES_VALUE = undefined
 
 const mutations = {

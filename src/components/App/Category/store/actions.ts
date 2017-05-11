@@ -1,7 +1,7 @@
 import { SET_CATEGORIES } from './mutations'
 import { getCategories } from '../api_client'
 
-export const FETCH_CATEGORIES = 'categoryTree/FETCH_CATEGORIES'
+export const FETCH_CATEGORIES = 'category/FETCH_CATEGORIES'
 
 const actions = {
   async[FETCH_CATEGORIES]({ commit }) {

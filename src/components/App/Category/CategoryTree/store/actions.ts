@@ -5,8 +5,8 @@ export const FETCH_CATEGORIES = 'categoryTree/FETCH_CATEGORIES'
 
 const actions = {
   async[FETCH_CATEGORIES]({ commit }) {
-    const data = await getCategories()
-    commit(SET_CATEGORIES, data)
+    const result = await getCategories()
+    commit(SET_CATEGORIES, result)
   }
 }
 

@@ -1,9 +1,9 @@
 import getters from './getters'
-import mutations from './mutations'
+import mutations, { INITIAL_CATEGROIES_VALUE } from './mutations'
 import actions from './actions'
 
 const initialState = {
-  categories: null
+  categories: INITIAL_CATEGROIES_VALUE
 }
 
 export default {

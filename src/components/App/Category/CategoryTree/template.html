@@ -2,14 +2,21 @@
   <h6>Manage Categories</h6>
   <hr>
   
+  <!-- work in progress -->
   <template v-if="isLoading">
-    <h6>Loading....</h6>
+    <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+    <span class="h3">Loading....</span>
   </template>
-  <template v-else-if="error">
+  
+  <!-- there is an error -->
+  <template v-else-if="fetchError">
     <h6 class="text-danger">Error in fetching categories</h6>
-    <p class="text-warning">{{error}}</p>
+    <p class="text-warning">{{ fetchError }}</p>
   </template>
+  
+  <!-- for nomral result -->
   <template v-else>
     {{ categories }}
   </template>
+  
 </div>

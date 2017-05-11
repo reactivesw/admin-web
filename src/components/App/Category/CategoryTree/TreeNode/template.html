@@ -1,0 +1,26 @@
+<li style="list-style-type: none;">
+  <select v-show="cNode.positions.length > 1" v-model="cNode.position">
+      <template v-for="pos in cNode.positions">
+        <option> {{ pos }} </option>
+      </template>
+    </select>
+
+  <template v-if="cNode.isParent()">
+    <span @click="toggle">
+      <i class="fa" :class="{ 'fa-minus-square-o': isOpen, 'fa-plus-square-o': !isOpen }" aria-hidden="true"></i>
+    </span>
+  </template>
+  <!-- not a parent -->
+  <template v-else>
+    <i class="fa fa-tag" aria-hidden="true"></i>
+  </template>
+
+  {{ $t(cNode.getName()) }}
+
+  <!-- recursively show children -->
+  <ul v-show="isOpen" v-if="cNode.isParent()">
+    <TreeNode v-for="child in cNode.children" :cNode=child :key="cNode.getId()">
+    </TreeNode>
+  </ul>
+
+</li>

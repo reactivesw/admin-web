@@ -6,8 +6,8 @@ export default class CategoryNode {
 
   category: object // the original category
   children: CategoryNode[]
-  isOpen: boolean = false  // default is folded 
   position: number  // the position in its parent
+  positions: number[]  // all sibling positions
 
   constructor(category: object) {
     this.category = category
@@ -20,7 +20,7 @@ export default class CategoryNode {
   }
 
   addChild(child: CategoryNode) {
-    this.children.push
+    this.children.push(child)
   }
 
   isParent(): boolean {
@@ -30,32 +30,44 @@ export default class CategoryNode {
   getId() {
     return this.category['id']
   }
-  
+
   getName() {
     return this.category['name']
   }
 
-  getPoistions(): number[] {
-    return range(this.children.length)
+  setPoistions(positions: number[]) {
+    this.positions = positions
   }
 }
 
-// not an efficient algorithm to build the tree, should be fine
-export function addChildren(nodes: CategoryNode[], categories) {
-  for (let cNode of nodes) {
+// simple tree build algorithm for a small data set
+export function addChildren(cNodes: CategoryNode[], categories) {
+  for (let cNode of cNodes) {
     CategoryNode.ResetPosition()
-    for (let cat of categories) {
-      let parentId = cat.parent && cat.parent.id
-      if (cNode.getId() === parentId) {
-        const childNode = new CategoryNode(cat)
-        cNode.addChild(childNode)
-      }
-    }
-
+    addRawChildren(cNode, categories)
     if (cNode.isParent()) {
+      setChildrenPositions(cNode)
+
+      // recursively add children's children
       addChildren(cNode.children, categories)
     }
   }
+}
+
+// add children from raw data
+export function addRawChildren(cNode: CategoryNode, categories) {
+  for (let cat of categories) {
+    let parentId = cat.parent && cat.parent.id
+    if (cNode.getId() === parentId) {
+      const childNode = new CategoryNode(cat)
+      cNode.addChild(childNode)
+    }
+  }
+}
+
+export function setChildrenPositions(cNode: CategoryNode) {
+  const positions = range(cNode.children.length)
+  cNode.children.forEach(child => child.setPoistions(positions))
 }
 
 export function range(count: number): number[] {

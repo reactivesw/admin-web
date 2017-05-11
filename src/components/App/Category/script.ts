@@ -34,7 +34,10 @@ export default class Category extends Vue {
   get categories() {
     const result = this.apiResult
     if (result) {
-      return result.data
+      const data = result.data
+      if (data) {
+        return data['results']
+      }
     }
   }
 }

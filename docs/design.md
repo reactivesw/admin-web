@@ -14,8 +14,7 @@ There are three possible results for any Api calls:
 * data: the call succeed. 
 
 To provide a good user experience, we have the following process:
-* Initially, the store sets all values as `undefined`
-* The value is `undefined` untill an api call returns. The component flag could be `isLoading` for data fetch or `isProcessing` for update/delete. 
+* The value is `undefined` until an api call returns. The component flag could be `isLoading` for data fetch or `isProcessing` for update/delete. 
 * The return value has two fields: an `error` field and a `data field`. We use `fetchError`, `{operation}Error` if there is an error for data fetch or other operations. 
 
 The component UI has three views, each for one of the three possible values: work in progress view, error view and normal view. A normal view is only shown when a call returns without an error. 

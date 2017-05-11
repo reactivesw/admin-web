@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { FETCH_CATEGORIES } from './store/actions'
-import { GET_CATEGORIES } from './store/getters'
 import { ApiResult } from 'src/infrastructure/api_client'
+import { getCategories } from './api_client'
 
 import CategoryTree from 'src/components/app/Category/CategoryTree'
 
@@ -13,25 +12,29 @@ import CategoryTree from 'src/components/app/Category/CategoryTree'
   }
 })
 export default class Category extends Vue {
+  // !  vue-class-component does not make a property reactive 
+  // if it has undefined as initial value
+  apiResult: ApiResult | null = null
 
-  created() {
-    this.$store.dispatch(FETCH_CATEGORIES)
-  }
-
-  // the result could be undefined (still loading), error or data
-  get fetchResult() {
-    return this.$store.getters[GET_CATEGORIES]
+  async created() {
+    this.apiResult = await getCategories()
   }
 
   get isLoading() {
-    return this.fetchResult === undefined
+    return this.apiResult === null
   }
 
   get fetchError() {
-    return this.fetchResult && this.fetchResult.error
+    const result = this.apiResult
+    if (result) {
+      return result.error
+    }
   }
 
   get categories() {
-    return this.fetchResult && this.fetchResult.data.results
+    const result = this.apiResult
+    if (result) {
+      return result.data
+    }
   }
 }

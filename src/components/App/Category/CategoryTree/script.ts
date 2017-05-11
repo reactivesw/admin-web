@@ -8,4 +8,5 @@ import Component from 'vue-class-component'
   }
 })
 export default class CategoryTree extends Vue {
+  
 }

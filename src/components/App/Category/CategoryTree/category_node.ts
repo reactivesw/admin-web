@@ -1,3 +1,5 @@
+import { SetOrderHintData } from '../model/UpdateCategory'
+
 const INIT_POSITION_NUMBER: number = 1
 
 export default class CategoryNode {
@@ -6,6 +8,7 @@ export default class CategoryNode {
 
   category: object // the original category
   children: CategoryNode[]
+  parent: CategoryNode | null  // use parent to find orderHints when change position
   position: number  // the position in its parent
   positions: number[]  // all sibling positions
 
@@ -13,6 +16,7 @@ export default class CategoryNode {
     this.category = category
     this.children = []
     this.position = CategoryNode.nextPosition++
+    this.parent = null
   }
 
   static ResetPosition() {
@@ -20,6 +24,7 @@ export default class CategoryNode {
   }
 
   addChild(child: CategoryNode) {
+    child.parent = this
     this.children.push(child)
   }
 
@@ -35,8 +40,35 @@ export default class CategoryNode {
     return this.category['name']
   }
 
+  getOrderHint(): string {
+    return this.category['orderHint']
+  }
+
   setPoistions(positions: number[]) {
     this.positions = positions
+  }
+
+  getOrderHints(fromPos: number, toPos: number): SetOrderHintData {
+    const parent: CategoryNode = this.parent as CategoryNode
+    let previousOrderHint = '0'  // if the to position is 1
+    let nextOrderHint = ''  // if the to position is the last
+
+    let prevIndex, nextIndex
+
+    // position increase
+    if (fromPos < toPos) {
+      previousOrderHint = parent.children[toPos - 1].getOrderHint()
+      if (toPos < parent.children.length) {
+        nextOrderHint = parent.children[toPos].getOrderHint()
+      }
+    } else { // position decrease
+      if (toPos > 1) {
+        previousOrderHint = parent.children[toPos - 2].getOrderHint()
+      }
+      nextOrderHint = parent.children[toPos - 1].getOrderHint()
+    }
+
+    return { previousOrderHint, nextOrderHint }
   }
 }
 

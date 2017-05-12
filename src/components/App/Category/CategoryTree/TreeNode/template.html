@@ -1,9 +1,7 @@
 <li style="list-style-type: none;">
-  <select v-show="cNode.positions.length > 1" v-model="cNode.position">
-      <template v-for="pos in cNode.positions">
-        <option> {{ pos }} </option>
-      </template>
-    </select>
+  <select v-show="cNode.positions.length > 1" v-model="position" @change.stop="changePositionHandler">
+      <option v-for="pos in cNode.positions"> {{ pos }} </option>
+  </select>
 
   <template v-if="cNode.isParent()">
     <span @click="toggle">

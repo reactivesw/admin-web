@@ -1,7 +1,4 @@
 <div id="categoryTree">
   <button type="button" class="btn btn-outline-primary btn-sm">Add Category</button>
-  <div style="list-style-type: none;" v-for="cNode in categoryNodes">
-    <TreeNode :cNode="cNode"></TreeNode>
-  </div>
-
+  <TreeNode v-for="cNode in categoryNodes" :cNode="cNode" :key="cNode.getId()"></TreeNode>
 </div>

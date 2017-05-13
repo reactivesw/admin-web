@@ -1,3 +1,5 @@
+export const SetOrderHintActionName = 'setOrderHint'
+
 export type ActionName = 
   'setName' | 'setDescription' 
   | 'setExternalId' | 'setMetaDescription'
@@ -9,9 +11,15 @@ export interface Action {
   action: ActionName
 }
 
-export interface UpdateCategory {
+export interface UpdateCategoryPayload {
   version: number  
   actions: Action[]
+}
+
+// used to make api call from components
+export interface UpdateCategoryArgs {
+  categoryId: string,
+  payload: UpdateCategoryPayload
 }
 
 export interface SetOrderHintData {

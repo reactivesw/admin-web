@@ -32,11 +32,11 @@ export default class CategoryNode {
     return this.children.length > 0
   }
 
-  getId() {
+  getId(): string {
     return this.category['id']
   }
 
-  getName() {
+  getName(): string {
     return this.category['name']
   }
 
@@ -44,14 +44,18 @@ export default class CategoryNode {
     return this.category['orderHint']
   }
 
+  getVersion(): number {
+    return this.category['version']
+  }
+
   setPoistions(positions: number[]) {
     this.positions = positions
   }
 
-  getOrderHints(fromPos: number, toPos: number): SetOrderHintData {
+  getOrderHintData(fromPos: number, toPos: number): SetOrderHintData {
     const parent: CategoryNode = this.parent as CategoryNode
-    let previousOrderHint = '0'  // if the to position is 1
-    let nextOrderHint = ''  // if the to position is the last
+    let previousOrderHint: string
+    let nextOrderHint: string
 
     let prevIndex, nextIndex
 
@@ -60,16 +64,45 @@ export default class CategoryNode {
       previousOrderHint = parent.children[toPos - 1].getOrderHint()
       if (toPos < parent.children.length) {
         nextOrderHint = parent.children[toPos].getOrderHint()
+      } else {
+        nextOrderHint = ''
       }
     } else { // position decrease
       if (toPos > 1) {
         previousOrderHint = parent.children[toPos - 2].getOrderHint()
+      } else {
+        previousOrderHint = '0'
       }
       nextOrderHint = parent.children[toPos - 1].getOrderHint()
     }
 
     return { previousOrderHint, nextOrderHint }
   }
+}
+
+// the data can be in any order
+// first get all root categories
+export function createRoots(categories) {
+  CategoryNode.ResetPosition()
+  const retVal: CategoryNode[] = []
+  for (let cat of categories) {
+    if (!cat.parent) {
+      const root = new CategoryNode(cat)
+      retVal.push(root)
+    }
+  }
+  return retVal
+}
+
+// to calculate the previous and the next order hints in setOrderHint
+// we need a virtual parent for root nodes and set their positions
+export function addVirtualParent(cNodes: CategoryNode[]) {
+  const virtualNode = new CategoryNode({})
+  const positions = range(cNodes.length)
+  cNodes.forEach(cNode => {
+    cNode.setPoistions(positions)
+    virtualNode.addChild(cNode)
+  })
 }
 
 // simple tree build algorithm for a small data set

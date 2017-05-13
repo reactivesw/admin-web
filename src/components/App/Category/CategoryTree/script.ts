@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import CategoryNode, { addChildren, range } from './category_node'
+import CategoryNode, { addChildren, range, 
+  createRoots, addVirtualParent } from './category_node'
 import TreeNode from 'src/components/App/Category/CategoryTree/TreeNode'
 
 @Component({
@@ -16,22 +17,9 @@ export default class CategoryTree extends Vue {
 
   // convert the flat array into an array of trees
   get categoryNodes(): CategoryNode[] {
-    const retVal: CategoryNode[] = []
     const categories = this.categories
-
-    // the data can be in any order
-    // first get all root categories
-    CategoryNode.ResetPosition()
-    for (let cat of categories) {
-      if (!cat.parent) {
-        const root = new CategoryNode(cat)
-        retVal.push(root)
-      }
-    }
-
-    const positions = range(retVal.length)
-    retVal.forEach(cat => cat.setPoistions(positions))
-
+    const retVal: CategoryNode[] = createRoots(categories)
+    addVirtualParent(retVal)
     addChildren(retVal, categories)
     return retVal
   }

@@ -22,9 +22,9 @@
   {{ $t(cNode.getName()) }}
   
   <ul v-show="isOpen" v-if="cNode.isParent()">
-    <TreeNode v-for="(child, idx) in cNode.children" 
+    <TreeNode v-for="child in cNode.children" 
       :cNode="child"
-      :index="idx"
+      :index="child.index"
       :key="child.getId()">
     </TreeNode>
   </ul>

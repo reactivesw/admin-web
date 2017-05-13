@@ -13,9 +13,11 @@ import {
 }
   from '../../model/UpdateCategory'
 
+import { CategoryView } from '../../model/Category'
+
+
 import { GET_DISABLE_SELECTS } from '../../store/getters'
-import { SET_DISABLE_SELECTS, SET_ORDER_HINT_CATEGORY }
-  from '../../store/mutations'
+import { SET_DISABLE_SELECTS } from '../../store/mutations'
 
 import { ApiResult } from 'src/infrastructure/api_client'
 
@@ -62,6 +64,7 @@ export default class TreeNode extends Vue {
     }
     return retVal
   }
+
 
   // when order hint value is not current, may send bad hint data
   async changePositionHandler() {
@@ -138,9 +141,76 @@ function processResult(result: ApiResult,
     // undo select change
     tNode.position = tNode.oldPosition
   } else {
-    const category = result.data
+    const category: CategoryView = result.data
 
     // looped component, use store to share change
-    tNode.$store.commit(SET_ORDER_HINT_CATEGORY, category)
+    // tNode.$store.commit(SET_ORDER_HINT_CATEGORY, category)
+  
+    let cNodeParent = cNode.parent
+    if (cNodeParent) {
+      updateCategoryHint(cNodeParent, category)
+    }
   }
+}
+
+function updateCategoryHint(cNodeParent: CategoryNode, category: CategoryView) {
+  let parent: CategoryNode | undefined = removeOld(cNodeParent, category)
+  if (parent) {
+    
+    const insertNode = new CategoryNode(category)
+    insertNode.parent = parent
+    insertNode.children = parent.children2
+
+    let oldChildren = parent.children
+    let insertPos = -1
+    for (let pos = 0; pos < oldChildren.length; pos++) {
+      // use clone to trigger state update
+      let oldChild = oldChildren[pos]
+      let cloneNode = new CategoryNode(oldChild.category)
+      cloneNode.parent = oldChild.parent
+      cloneNode.children = oldChild.children
+      if (parseFloat(category.orderHint) < parseFloat(oldChildren[pos].getOrderHint())) {
+        if (insertPos === -1) {
+          insertPos = pos
+        }
+      } 
+      
+      if (insertPos === -1) {
+        // keep the current index
+        cloneNode.index = pos
+      } else {  // after the inserted 
+        cloneNode.index = pos + 1
+      }
+      
+      // trigger index state update
+      oldChildren.splice(pos, 1, cloneNode)
+    }
+    
+    insertPos = insertPos >= 0? insertPos: oldChildren.length
+    insertNode.index = insertPos
+    oldChildren.splice(insertPos, 0, insertNode)
+  }
+}
+
+// find and remove the old node
+function removeOld(cNode: CategoryNode, category: CategoryView): CategoryNode | undefined {
+  const children = cNode.children
+  const length = children.length
+  if (length > 0) {
+    const index = children.findIndex(child => child.getId() === category.id)
+    if (index >= 0) {
+      // store it and put it back to the new node
+      cNode.children2 = children[index].children
+      children.splice(index, 1)
+      return cNode
+    }
+
+    for (let child of children) {
+      let parent = removeOld(child, category)
+      if (parent) {
+        return parent
+      }
+    }
+  }
+
 }

@@ -39,4 +39,6 @@ export default class CategoryNode {
   getVersion(): number {
     return this.category.version
   }
+
+
 }

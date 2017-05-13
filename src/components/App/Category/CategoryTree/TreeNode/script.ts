@@ -28,19 +28,19 @@ export default class TreeNode extends Vue {
   cNode: CategoryNode  // the input prop
   index: number
 
-  isOpen = false
-  position = -1
-  oldPosition = -1
+  // open or fold of children
+  // initially open for virtual root
+  isOpen: boolean = false
+  position: number
+  oldPosition: number
 
   created() {
     this.position = this.index + 1
     this.oldPosition = this.position
   }
 
-  toggle() {
-    if (this.cNode.isParent) {
-      this.isOpen = !this.isOpen
-    }
+  toggleOpen() {
+    this.isOpen = !this.isOpen
   }
 
   get isSelectDisabled() {
@@ -127,7 +127,7 @@ function buildPositionArgs(cNode: CategoryNode,
 
 function processResult(result: ApiResult,
   tNode: TreeNode, fromPos: number, toPos: number) {
-  
+
   const cNode = tNode.cNode
   if (result.error) {
     // undo select change

@@ -22,31 +22,36 @@ export default class CategoryTree extends Vue {
   virtualRoot: CategoryNode = new CategoryNode(DummyCategoryView)
 
   created() {
-    for (let cat of this.categories) {
+    const sorted = this.categories.slice()
+    sorted.sort((c1, c2) => {
+      return parseFloat(c1.orderHint) - parseFloat(c2.orderHint)
+    })
+    
+    for (let cat of sorted) {
       if (!cat.parent) {
         const root = new CategoryNode(cat)
         this.virtualRoot.addChild(root)
       }
     }
 
-    addChildren(this.virtualRoot.children, this.categories)
+    addChildren(this.virtualRoot.children, sorted)
   }
 }
 
 // simple tree build algorithm for a small data set
-function addChildren(cNodes: CategoryNode[], categories: CategoryView[]) {
+function addChildren(cNodes: CategoryNode[], sorted: CategoryView[]) {
   for (let cNode of cNodes) {
-    addRawChildren(cNode, categories)
+    addRawChildren(cNode, sorted)
     if (cNode.isParent()) {
       // recursively add children's children
-      addChildren(cNode.children, categories)
+      addChildren(cNode.children, sorted)
     }
   }
 }
 
 // add children from raw data
-function addRawChildren(cNode: CategoryNode, categories: CategoryView[]) {
-  for (let cat of categories) {
+function addRawChildren(cNode: CategoryNode, sorted: CategoryView[]) {
+  for (let cat of sorted) {
     let parentId = cat.parent && cat.parent.id
     if (cNode.getId() === parentId) {
       const childNode = new CategoryNode(cat)

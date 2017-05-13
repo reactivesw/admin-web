@@ -19,7 +19,7 @@ export interface CategoryView {
 }
 
 export const DummyCategoryView : CategoryView = {
-  id: "",
+  id: "-1",
   version: 0,
   name: {},
   description: {},

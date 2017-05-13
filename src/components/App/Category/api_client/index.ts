@@ -11,6 +11,5 @@ export async function getCategories() {
 
 export async function setOrderHint(args: UpdateCategoryArgs) {
   const path = `${API_URL}/${args.categoryId}`
-  const result = await http.put(path, args.payload)
-  return result
+  return await http.put(path, args.payload)
 }

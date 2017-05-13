@@ -16,19 +16,25 @@ import {
 import { GET_DISABLE_SELECTS } from '../../store/getters'
 import { SET_DISABLE_SELECTS } from '../../store/mutations'
 
+import { ApiResult } from 'src/infrastructure/api_client'
+
 @Component({
   props: {
-    cNode: Object
+    cNode: Object,
+    index: Number
   }
 })
 export default class TreeNode extends Vue {
   cNode: CategoryNode  // the input prop
+  index: number
 
   isOpen = false
   position = -1
+  oldPosition = -1
 
   created() {
-    this.position = this.cNode.position
+    this.position = this.index + 1
+    this.oldPosition = this.position
   }
 
   toggle() {
@@ -41,15 +47,30 @@ export default class TreeNode extends Vue {
     return this.$store.getters[GET_DISABLE_SELECTS]
   }
 
+  get options() {
+    const retVal: number[] = []
+    let parent = this.cNode.parent
+    if (parent) {
+      for (let ii = 1; ii <= parent.children.length; ii++) {
+        retVal.push(ii)
+      }
+    }
+    return retVal
+  }
+
   // when order hint value is not current, may send bad hint data
   async changePositionHandler() {
     this.$store.commit(SET_DISABLE_SELECTS, true)
 
+    const fromPos = this.oldPosition
+    const toPos = this.position
+
     const orderHints: SetOrderHintData = getOrderHintData(
-      this.cNode, this.cNode.position, this.position
+      this.cNode, fromPos, toPos
     )
     const args = buildPositionArgs(this.cNode, orderHints)
-    const result = await setOrderHint(args)
+    const result: ApiResult = await setOrderHint(args)
+    processResult(result, this, fromPos, toPos)
 
     this.$store.commit(SET_DISABLE_SELECTS, false)
   }
@@ -102,4 +123,14 @@ function buildPositionArgs(cNode: CategoryNode,
     payload
   }
   return args
+}
+
+function processResult(result: ApiResult,
+  tNode: TreeNode, fromPos: number, toPos: number) {
+  
+  const cNode = tNode.cNode
+  if (result.error) {
+    // undo select change
+    tNode.position = tNode.oldPosition
+  }
 }

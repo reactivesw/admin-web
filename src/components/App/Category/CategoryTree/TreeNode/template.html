@@ -1,9 +1,9 @@
 <li style="list-style-type: none;">
-  <select v-show="cNode.positions.length > 1" 
-    v-model="position" 
-    :disabled="isSelectDisabled"
-    @change.stop="changePositionHandler">
-      <option v-for="pos in cNode.positions"> {{ pos }} </option>
+  <select v-show="options.length > 1" 
+      v-model="position" 
+      :disabled="isSelectDisabled"
+      @change.stop="changePositionHandler">
+    <option v-for="pos in options"> {{ pos }} </option>
   </select>
 
   <template v-if="cNode.isParent()">
@@ -20,7 +20,10 @@
 
   <!-- recursively show children -->
   <ul v-show="isOpen" v-if="cNode.isParent()">
-    <TreeNode v-for="child in cNode.children" :cNode=child :key="cNode.getId()">
+    <TreeNode v-for="(child, index) in cNode.children" 
+      :cNode=child 
+      :index="index"
+      :key="cNode.getId()">
     </TreeNode>
   </ul>
 

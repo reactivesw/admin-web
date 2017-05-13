@@ -1,5 +1,8 @@
 <li style="list-style-type: none;">
-  <select v-show="cNode.positions.length > 1" v-model="position" @change.stop="changePositionHandler">
+  <select v-show="cNode.positions.length > 1" 
+    v-model="position" 
+    :disabled="isSelectDisabled"
+    @change.stop="changePositionHandler">
       <option v-for="pos in cNode.positions"> {{ pos }} </option>
   </select>
 

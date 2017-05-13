@@ -14,7 +14,8 @@ import {
   from '../../model/UpdateCategory'
 
 import { GET_DISABLE_SELECTS } from '../../store/getters'
-import { SET_DISABLE_SELECTS } from '../../store/mutations'
+import { SET_DISABLE_SELECTS, SET_ORDER_HINT_CATEGORY }
+  from '../../store/mutations'
 
 import { ApiResult } from 'src/infrastructure/api_client'
 
@@ -36,7 +37,11 @@ export default class TreeNode extends Vue {
 
   created() {
     this.position = this.index + 1
-    this.oldPosition = this.position
+    this.oldPosition = this.index + 1
+  }
+
+  beforeUpdated() {
+    this.position = this.index + 1
   }
 
   toggleOpen() {
@@ -132,5 +137,10 @@ function processResult(result: ApiResult,
   if (result.error) {
     // undo select change
     tNode.position = tNode.oldPosition
+  } else {
+    const category = result.data
+
+    // looped component, use store to share change
+    tNode.$store.commit(SET_ORDER_HINT_CATEGORY, category)
   }
 }

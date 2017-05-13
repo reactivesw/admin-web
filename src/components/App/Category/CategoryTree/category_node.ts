@@ -9,6 +9,9 @@ export default class CategoryNode {
   children: CategoryNode[]
   parent: CategoryNode | null // use parent to find orderHints when change position
 
+  index: number   // reset on change to make it reactive
+  children2: CategoryNode[] // store deleted child's children
+
   constructor(category: CategoryView) {
     this.category = category
     this.children = []
@@ -40,5 +43,9 @@ export default class CategoryNode {
     return this.category.version
   }
 
-
+  resetChildrenIndex() {
+    for (let ii =0; ii < this.children.length; ii++) {
+      this.children[ii].index = ii
+    }
+  }  
 }

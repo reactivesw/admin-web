@@ -4,7 +4,7 @@ import Component from 'vue-class-component'
 import { ApiResult } from 'src/infrastructure/api_client'
 import { getCategories } from './api_client'
 
-import CategoryTree from 'src/components/app/Category/CategoryTree'
+import CategoryTree from 'src/components/App/Category/CategoryTree'
 
 @Component({
   components: {

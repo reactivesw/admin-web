@@ -78,7 +78,7 @@ export default class TreeNode extends Vue {
       // undo select change
       this.position = fromPos
     } else {
-      // this.$store.commit(SET_ORDER_HINT, result.data)
+      this.$store.commit(SET_ORDER_HINT, result.data)
     }
 
     this.$store.commit(SET_DISABLE_SELECTS, false)

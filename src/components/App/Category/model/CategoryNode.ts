@@ -1,7 +1,5 @@
-import { CategoryView, DummyCategoryView } from '../model/Category'
-import { SetOrderHintData } from '../model/UpdateCategory'
-
-const INIT_POSITION_NUMBER: number = 1
+import { CategoryView, DummyCategoryView } from './Category'
+import { SetOrderHintData } from './UpdateCategory'
 
 export default class CategoryNode {
 

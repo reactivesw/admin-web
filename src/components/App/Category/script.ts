@@ -4,20 +4,25 @@ import Component from 'vue-class-component'
 import { ApiResult } from 'src/infrastructure/api_client'
 import { getCategories } from './api_client'
 
-import CategoryTree from 'src/components/App/Category/CategoryTree'
+import { SET_CATEGORY_TREE } from './store/mutations'
+import { GET_CATEGORY_TREE } from './store/getters'
+
+import TreeNode from 'src/components/App/Category/TreeNode'
 
 @Component({
   components: {
-    CategoryTree
+    TreeNode
   }
 })
 export default class Category extends Vue {
-  // !  vue-class-component does not make a property reactive 
-  // if it has undefined as initial value
+  // !  a property is NOT reactive if it its initial value is 'undefined
   apiResult: ApiResult | null = null
 
   async created() {
     this.apiResult = await getCategories()
+    if (this.apiResult && this.apiResult.data) {
+      this.$store.commit(SET_CATEGORY_TREE, this.apiResult.data['results'])
+    }
   }
 
   get isLoading() {
@@ -25,20 +30,12 @@ export default class Category extends Vue {
   }
 
   get fetchError() {
-    const result = this.apiResult
-    if (result) {
-      return result.error
+    if (this.apiResult) {
+      return this.apiResult.error
     }
   }
 
-  // we return the sorted array
-  get categories() {
-    const result = this.apiResult
-    if (result) {
-      const data = result.data
-      if (data) {
-        return data['results']
-      }
-    }
+  get virtualRoot() {
+    return this.$store.getters[GET_CATEGORY_TREE]
   }
 }

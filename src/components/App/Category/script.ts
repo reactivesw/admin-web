@@ -4,7 +4,7 @@ import Component from 'vue-class-component'
 import { ApiResult } from 'src/infrastructure/api_client'
 import { getCategories } from './api_client'
 
-import CategoryTree from 'src/components/app/Category/CategoryTree'
+import CategoryTree from 'src/components/App/Category/CategoryTree'
 
 @Component({
   components: {
@@ -31,6 +31,7 @@ export default class Category extends Vue {
     }
   }
 
+  // we return the sorted array
   get categories() {
     const result = this.apiResult
     if (result) {

@@ -1,7 +1,8 @@
 <div id="categoryTree">
-  <button type="button" class="btn btn-primary">Add Category</button>
-  <div style="list-style-type: none;" v-for="cNode in categoryNodes">
-    <TreeNode :cNode="cNode"></TreeNode>
-  </div>
-
+  <button type="button" class="btn btn-outline-primary btn-sm">Add Category</button>
+  <TreeNode v-for="child in this.virtualRoot.children" 
+      :cNode="child" 
+      :index="child.index"
+      :key="child.getId()">
+    </TreeNode>
 </div>

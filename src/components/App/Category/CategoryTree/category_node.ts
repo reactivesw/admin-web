@@ -1,25 +1,25 @@
+import { CategoryView, DummyCategoryView } from '../model/Category'
+import { SetOrderHintData } from '../model/UpdateCategory'
+
 const INIT_POSITION_NUMBER: number = 1
 
 export default class CategoryNode {
 
-  static nextPosition: number
-
-  category: object // the original category
+  category: CategoryView  // the original category
   children: CategoryNode[]
-  position: number  // the position in its parent
-  positions: number[]  // all sibling positions
+  parent: CategoryNode | null // use parent to find orderHints when change position
 
-  constructor(category: object) {
+  index: number   // reset on change to make it reactive
+  children2: CategoryNode[] // store deleted child's children
+
+  constructor(category: CategoryView) {
     this.category = category
     this.children = []
-    this.position = CategoryNode.nextPosition++
-  }
-
-  static ResetPosition() {
-    CategoryNode.nextPosition = INIT_POSITION_NUMBER
+    this.parent = null
   }
 
   addChild(child: CategoryNode) {
+    child.parent = this
     this.children.push(child)
   }
 
@@ -27,53 +27,25 @@ export default class CategoryNode {
     return this.children.length > 0
   }
 
-  getId() {
-    return this.category['id']
+  getId(): string {
+    return this.category.id
   }
 
-  getName() {
-    return this.category['name']
+  getName(): object {
+    return this.category.name
   }
 
-  setPoistions(positions: number[]) {
-    this.positions = positions
+  getOrderHint(): string {
+    return this.category.orderHint
   }
-}
 
-// simple tree build algorithm for a small data set
-export function addChildren(cNodes: CategoryNode[], categories) {
-  for (let cNode of cNodes) {
-    CategoryNode.ResetPosition()
-    addRawChildren(cNode, categories)
-    if (cNode.isParent()) {
-      setChildrenPositions(cNode)
+  getVersion(): number {
+    return this.category.version
+  }
 
-      // recursively add children's children
-      addChildren(cNode.children, categories)
+  resetChildrenIndex() {
+    for (let ii =0; ii < this.children.length; ii++) {
+      this.children[ii].index = ii
     }
-  }
-}
-
-// add children from raw data
-export function addRawChildren(cNode: CategoryNode, categories) {
-  for (let cat of categories) {
-    let parentId = cat.parent && cat.parent.id
-    if (cNode.getId() === parentId) {
-      const childNode = new CategoryNode(cat)
-      cNode.addChild(childNode)
-    }
-  }
-}
-
-export function setChildrenPositions(cNode: CategoryNode) {
-  const positions = range(cNode.children.length)
-  cNode.children.forEach(child => child.setPoistions(positions))
-}
-
-export function range(count: number): number[] {
-  const retVal: number[] = []
-  for (let ii = 1; ii <= count; ii++) {
-    retVal.push(ii)
-  }
-  return retVal
+  }  
 }

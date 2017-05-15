@@ -3,7 +3,7 @@ import axios from 'axios'
 const baseURL = process.env.ADMIN_API_URL
 
 export interface ApiResult {
-  data?: object
+  data?: any
   error?: string
 }
 

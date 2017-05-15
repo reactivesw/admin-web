@@ -1,9 +1,8 @@
 import getters from './getters'
-import mutations, { INITIAL_DISABLE_SELECTS_VALUE } from './mutations'
-
+import mutations from './mutations'
 
 const initialState = {
-  disableSelects : INITIAL_DISABLE_SELECTS_VALUE,  
+  disableSelects : false,  
   orderHintCategory: null
 }
 

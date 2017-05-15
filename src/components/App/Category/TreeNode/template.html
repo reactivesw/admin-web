@@ -2,7 +2,7 @@
   <select v-show="options.length > 1" 
       v-model="position" 
       :disabled="isSelectDisabled"
-      @change.stop="changePositionHandler">
+      @change="changePositionHandler">
     <option v-for="pos in options"> {{ pos }} </option>
   </select>
 

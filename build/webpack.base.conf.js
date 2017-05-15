@@ -4,11 +4,16 @@ var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
 
+// Detect travis environment
+const TRAVIS = process.env.TRAVIS ? JSON.parse(process.env.TRAVIS) : false;
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
 module.exports = {
+  // Make webpack build failed on error in travis env, https://webpack.js.org/configuration/other-options/#bail
+  bail: TRAVIS,
   entry: {
     app: './src/main.ts'
   },

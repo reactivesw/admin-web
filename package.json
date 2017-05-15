@@ -1,13 +1,14 @@
 {
   "name": "admin-web",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Administration Web Front",
   "author": "dev@reactivesw.com",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "docker": "node build/docker.js"
   },
   "dependencies": {
     "axios": "^0.16.1",

@@ -1,11 +1,7 @@
-export const GET_CATEGORY_TREE = 'category/GET_CATEGORY_TREE'
 export const GET_CATEGORY_MAP = 'category/GET_CATEGORY_MAP'
 export const GET_DISABLE_SELECTS = 'category/GET_DISABLE_SELECTS'
 
 const getters = {
-  [GET_CATEGORY_TREE](state) {
-    return state.categoryTree
-  },
 
   [GET_CATEGORY_MAP](state) {
     return state.categoryMap

@@ -17,9 +17,10 @@
   <!-- for nomral result -->
   <template v-else-if="virtualRoot">
     <button type="button" class="btn btn-outline-primary btn-sm">Add Category</button>
-    <TreeNode v-for="child in childNodes" 
+    <TreeNode v-for="(child, index) in childNodes" 
       :parent="virtualRoot"
       :cNode="child" 
+      :index="index"
       :key="child.id">
     </TreeNode>
   </template>

@@ -21,12 +21,14 @@ import { SET_DISABLE_SELECTS, SET_ORDER_HINT } from '../store/mutations'
 @Component({
   props: {
     parent: Object,
-    cNode: Object
+    cNode: Object,
+    index: Number
   }
 })
 export default class TreeNode extends Vue {
   parent: CategoryNode
   cNode: CategoryNode  // the input prop
+  index: number
 
   // open or fold of children
   // initially open for virtual root
@@ -34,7 +36,7 @@ export default class TreeNode extends Vue {
   newPositionValue: number = -1
 
   get position() {
-    return this.cNode.index + 1
+    return this.index + 1
   }
 
   set position(newValue) {
@@ -52,11 +54,9 @@ export default class TreeNode extends Vue {
 
   get options() {
     const retVal: number[] = []
-    let parent = this.parent
-    if (parent) {
-      for (let ii = 1; ii <= parent.children.length; ii++) {
-        retVal.push(ii)
-      }
+    const count = this.parent.children.length
+    for (let ii = 1; ii <= count; ii++) {
+      retVal.push(ii)
     }
     return retVal
   }
@@ -71,13 +71,10 @@ export default class TreeNode extends Vue {
 
   // when order hint value is not current, may send bad hint data
   async changePositionHandler() {
-    console.log(`Position value is: ${this.position}`)
     this.$store.commit(SET_DISABLE_SELECTS, true)
 
-    const fromPos = this.cNode.index + 1
+    const fromPos = this.index + 1
     const toPos = this.newPositionValue
-
-    console.log(`Change position from ${fromPos} to: ${toPos}`)
 
     const orderHints = getOrderHintData(
       this.parent, this.categoryMap, fromPos, toPos)

@@ -4,10 +4,7 @@ import { SetOrderHintData } from './UpdateCategory'
 export default class CategoryNode {
 
   private _category: CategoryView  // the original category
-  private _children: string[]
-  private _index: number
-  // store deleted child's children, used in set order hint
-  private _grandChildren: string[] 
+  private _children: string[] // to calculate the position in the category tree
 
   constructor(category: CategoryView) {
     this._category = category
@@ -16,11 +13,6 @@ export default class CategoryNode {
 
   insertAt(position: number, id: string) {
     this._children.splice(position, 0, id)
-  }
-
-  // add sorted data
-  addChild(id: string) {
-    this._children.push(id)
   }
 
   isParent(): boolean {
@@ -50,13 +42,4 @@ export default class CategoryNode {
   set children(children: string[]) {
     this._children = children
   }
-
-  get index(): number {
-    return this._index
-  }
-
-  set index(index: number) {
-    this._index = index
-  }
-
 }

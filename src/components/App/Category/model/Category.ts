@@ -20,10 +20,15 @@ export interface CategoryView {
 
 export const DummyCategoryView : CategoryView = {
   id: "-1",
-  version: 0,
+  version: -1,
   name: {},
   description: {},
   slug: "",
-  orderHint: "",
+  orderHint: "-1",
   ancestor: []
+}
+
+// not use Map because we target ES5
+export interface CategoryMap {
+  [catgoryId: string]: CategoryView
 }

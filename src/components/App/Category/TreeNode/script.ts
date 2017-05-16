@@ -5,7 +5,8 @@ import { ApiResult } from 'src/infrastructure/api_client'
 import { setOrderHint } from '../api_client'
 
 import CategoryNode from '../model/CategoryNode'
-import { CategoryView } from '../model/Category'
+import { CategoryView, CategoryMap } from '../model/Category'
+import { buildChildNodes } from '../model/utilities'
 import {
   SetOrderHintActionName,
   Action,
@@ -14,38 +15,36 @@ import {
   UpdateCategoryPayload
 } from '../model/UpdateCategory'
 
-import { GET_DISABLE_SELECTS } from '../store/getters'
+import { GET_DISABLE_SELECTS, GET_CATEGORY_MAP } from '../store/getters'
 import { SET_DISABLE_SELECTS, SET_ORDER_HINT } from '../store/mutations'
 
 @Component({
   props: {
-    cNode: Object,
-    index: Number
+    parent: Object,
+    cNode: Object
   }
 })
 export default class TreeNode extends Vue {
+  parent: CategoryNode
   cNode: CategoryNode  // the input prop
-  index: number
 
   // open or fold of children
   // initially open for virtual root
   isOpen: boolean = false
-  position: number
-  oldPosition: number
+  newPositionValue: number = -1
 
-  created() {
-    this.position = this.index + 1
-    this.oldPosition = this.index + 1
+  get position() {
+    return this.cNode.index + 1
   }
 
-  beforeUpdated() {
-    this.position = this.index + 1
+  set position(newValue) {
+    this.newPositionValue = newValue
   }
 
   toggleOpen() {
     this.isOpen = !this.isOpen
   }
-  
+
   // change order hint request is in progress, dsiable select control
   get isSelectDisabled() {
     return this.$store.getters[GET_DISABLE_SELECTS]
@@ -53,7 +52,7 @@ export default class TreeNode extends Vue {
 
   get options() {
     const retVal: number[] = []
-    let parent = this.cNode.parent
+    let parent = this.parent
     if (parent) {
       for (let ii = 1; ii <= parent.children.length; ii++) {
         retVal.push(ii)
@@ -62,14 +61,26 @@ export default class TreeNode extends Vue {
     return retVal
   }
 
+  get categoryMap(): CategoryMap {
+    return this.$store.getters[GET_CATEGORY_MAP]
+  }
+
+  get childNodes(): CategoryNode[] {
+    return buildChildNodes(this.cNode, this.categoryMap)
+  }
+
   // when order hint value is not current, may send bad hint data
   async changePositionHandler() {
+    console.log(`Position value is: ${this.position}`)
     this.$store.commit(SET_DISABLE_SELECTS, true)
 
-    const fromPos = this.oldPosition
-    const toPos = this.position
+    const fromPos = this.cNode.index + 1
+    const toPos = this.newPositionValue
 
-    const orderHints = getOrderHintData(this.cNode, fromPos, toPos)
+    console.log(`Change position from ${fromPos} to: ${toPos}`)
+
+    const orderHints = getOrderHintData(
+      this.parent, this.categoryMap, fromPos, toPos)
     const args = buildPositionArgs(this.cNode, orderHints)
     const result: ApiResult = await setOrderHint(args)
 
@@ -86,29 +97,28 @@ export default class TreeNode extends Vue {
 }
 
 // get the prve and next order hint values
-function getOrderHintData(cNode: CategoryNode, 
-    fromPos: number, toPos: number): SetOrderHintData {
-  const parent: CategoryNode = cNode.parent as CategoryNode
+function getOrderHintData(parent: CategoryNode,
+  categoryMap: CategoryMap, fromPos: number, toPos: number): SetOrderHintData {
   let previousOrderHint: string
   let nextOrderHint: string
-  let siblings = parent.children
+  let siblingIds = parent.children
 
   let prevIndex, nextIndex
 
   if (fromPos < toPos) { // position increase
-    previousOrderHint = siblings[toPos - 1].getOrderHint()
-    if (toPos < parent.children.length) {
-      nextOrderHint = siblings[toPos].getOrderHint()
+    previousOrderHint = categoryMap[siblingIds[toPos - 1]].orderHint
+    if (toPos < siblingIds.length) {
+      nextOrderHint = categoryMap[siblingIds[toPos]].orderHint
     } else {
       nextOrderHint = ''  // for the last, this is empty
     }
   } else { // position decrease
-    if (toPos == 0) {
+    if (toPos == 1) {
       previousOrderHint = '0' // for the first, this is 0
     } else {
-      previousOrderHint = siblings[toPos - 2].getOrderHint()
+      previousOrderHint = categoryMap[siblingIds[toPos - 2]].orderHint
     }
-    nextOrderHint = siblings[toPos - 1].getOrderHint()
+    nextOrderHint = categoryMap[siblingIds[toPos - 1]].orderHint
   }
 
   return { previousOrderHint, nextOrderHint }
@@ -122,12 +132,12 @@ function buildPositionArgs(cNode: CategoryNode,
   }
 
   const payload: UpdateCategoryPayload = {
-    version: cNode.getVersion(),
+    version: cNode.version,
     actions: [action]
   }
 
   const args: UpdateCategoryArgs = {
-    categoryId: cNode.getId(),
+    categoryId: cNode.id,
     payload
   }
   return args

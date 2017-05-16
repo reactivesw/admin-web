@@ -5,7 +5,11 @@ import { ApiResult } from 'src/infrastructure/api_client'
 import { getCategories } from './api_client'
 
 import { SET_CATEGORY_TREE } from './store/mutations'
-import { GET_CATEGORY_TREE } from './store/getters'
+import { GET_CATEGORY_TREE, GET_CATEGORY_MAP } from './store/getters'
+
+import CategoryNode from './model/CategoryNode'
+import { CategoryView, CategoryMap } from './model/Category'
+import { buildChildNodes } from './model/utilities'
 
 import TreeNode from 'src/components/App/Category/TreeNode'
 
@@ -35,7 +39,16 @@ export default class Category extends Vue {
     }
   }
 
-  get virtualRoot() {
+  get virtualRoot(): CategoryNode {
     return this.$store.getters[GET_CATEGORY_TREE]
   }
+
+  get categoryMap(): CategoryMap {
+    return this.$store.getters[GET_CATEGORY_MAP]
+  }
+
+  get childNodes(): CategoryNode[] {
+    return buildChildNodes(this.virtualRoot, this.categoryMap)
+  }
 }
+

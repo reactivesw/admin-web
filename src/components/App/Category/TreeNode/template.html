@@ -3,7 +3,7 @@
       v-model="position" 
       :disabled="isSelectDisabled"
       @change="changePositionHandler">
-    <option v-for="pos in options"> {{ pos }} </option>
+    <option v-for="pos in options" :value="pos"> {{ pos }} </option>
   </select>
 
   <template v-if="cNode.isParent()">
@@ -19,13 +19,13 @@
     <i class="fa fa-tag" aria-hidden="true"></i>
   </template>
   
-  {{ $t(cNode.getName()) }}
+  {{ $t(cNode.name) }}
   
   <ul v-show="isOpen" v-if="cNode.isParent()">
-    <TreeNode v-for="child in cNode.children" 
+    <TreeNode v-for="child in childNodes" 
+      :parent="cNode"
       :cNode="child"
-      :index="child.index"
-      :key="child.getId()">
+      :key="child.id">
     </TreeNode>
   </ul>
 </li>

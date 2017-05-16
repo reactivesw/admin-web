@@ -1,12 +1,12 @@
 <div>
-  <h5>Manage Categories</h5>
+  <h5>{{ $t("category.manage_categories") }}</h5>
   <ErrorMessage v-show="!!errorMessage" :errorMessage="errorMessage" @CloseErrorEvent="closeErrorMessage"></ErrorMessage>
   <hr>
   
   <!-- work in progress -->
   <template v-if="isLoading">
     <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
-    <span class="h3">Loading....</span>
+    <span class="h3">{{ $t("common.loading_data") }}</span>
   </template>
   
   <!-- for nomral result -->

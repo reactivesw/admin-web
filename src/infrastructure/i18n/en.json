@@ -1,6 +1,14 @@
 {
-   "header": {
+  "common": {
+    "loading_data": "Loading"
+  },
+
+  "header": {
     "brand": "Reactivesw",
     "title": "Admin Center"
+  },
+
+  "category": {
+    "manage_categories": "Manage Categories"
   }
 }

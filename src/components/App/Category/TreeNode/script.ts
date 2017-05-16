@@ -16,7 +16,7 @@ import {
 } from '../model/UpdateCategory'
 
 import { GET_DISABLE_SELECTS, GET_CATEGORY_MAP } from '../store/getters'
-import { SET_DISABLE_SELECTS, SET_ORDER_HINT } from '../store/mutations'
+import { SET_DISABLE_SELECTS, SET_ORDER_HINT, SET_ERROR_MESSAGE } from '../store/mutations'
 
 @Component({
   props: {
@@ -76,15 +76,12 @@ export default class TreeNode extends Vue {
     const fromPos = this.index + 1
     const toPos = this.newPositionValue
 
-    const orderHints = getOrderHintData(
-      this.parent, this.categoryMap, fromPos, toPos)
+    const orderHints = getOrderHintData(this.parent, this.categoryMap, fromPos, toPos)
     const args = buildPositionArgs(this.cNode, orderHints)
     const result: ApiResult = await setOrderHint(args)
 
     if (result.error) {
-      // TODO: show error
-      // undo select change
-      this.position = fromPos
+      this.$store.commit(SET_ERROR_MESSAGE, result.error)
     } else {
       this.$store.commit(SET_ORDER_HINT, result.data)
     }

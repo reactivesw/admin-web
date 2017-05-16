@@ -1,17 +1,12 @@
 <div>
   <h5>Manage Categories</h5>
+  <ErrorMessage v-show="!!errorMessage" :errorMessage="errorMessage" @CloseErrorEvent="closeErrorMessage"></ErrorMessage>
   <hr>
   
   <!-- work in progress -->
   <template v-if="isLoading">
     <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
     <span class="h3">Loading....</span>
-  </template>
-  
-  <!-- there is an error -->
-  <template v-else-if="fetchError">
-    <h6 class="text-danger">Error in fetching categories, please try later.</h6>
-    <p class="text-warning">{{ fetchError }}</p>
   </template>
   
   <!-- for nomral result -->

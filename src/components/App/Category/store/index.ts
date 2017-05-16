@@ -3,7 +3,8 @@ import mutations from './mutations'
 
 const initialState = {
   disableSelects : false,
-  categoryMap: null
+  categoryMap: null,
+  errorMessage: null
 }
 
 export default {

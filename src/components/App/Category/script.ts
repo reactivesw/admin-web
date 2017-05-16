@@ -4,18 +4,21 @@ import Component from 'vue-class-component'
 import { ApiResult } from 'src/infrastructure/api_client'
 import { getCategories } from './api_client'
 
-import { SET_CATEGORY_MAP } from './store/mutations'
-import { GET_CATEGORY_MAP } from './store/getters'
+import { SET_CATEGORY_MAP, SET_ERROR_MESSAGE, CLEAR_ERROR_MESSAGE } 
+  from './store/mutations'
+import { GET_CATEGORY_MAP, GET_ERROR_MESSAGE } from './store/getters'
 
 import CategoryNode from './model/CategoryNode'
 import { CategoryView, CategoryMap, DummyCategoryView } from './model/Category'
 import { buildChildNodes, addChildren } from './model/utilities'
 
 import TreeNode from 'src/components/App/Category/TreeNode'
+import ErrorMessage from 'src/components/App/Category/ErrorMessage'
 
 @Component({
   components: {
-    TreeNode
+    TreeNode,
+    ErrorMessage
   }
 })
 export default class Category extends Vue {
@@ -24,8 +27,12 @@ export default class Category extends Vue {
 
   async created() {
     this.apiResult = await getCategories()
-    if (this.apiResult && this.apiResult.data) {
-      this.$store.commit(SET_CATEGORY_MAP, this.apiResult.data['results'])
+    if (this.apiResult) {
+      if (this.apiResult.error) {
+        this.$store.commit(SET_ERROR_MESSAGE, this.apiResult.error)
+      } else {
+        this.$store.commit(SET_CATEGORY_MAP, this.apiResult.data['results'])
+      }
     }
   }
 
@@ -33,10 +40,12 @@ export default class Category extends Vue {
     return this.apiResult === null
   }
 
-  get fetchError() {
-    if (this.apiResult) {
-      return this.apiResult.error
-    }
+  get errorMessage() {
+    return this.$store.getters[GET_ERROR_MESSAGE]
+  }
+
+  closeErrorMessage() {
+    this.$store.commit(CLEAR_ERROR_MESSAGE)
   }
 
   get categoryMap(): CategoryMap {

@@ -8,7 +8,15 @@
     "title": "Admin Center"
   },
 
+  "sidebar": {
+    "categories": "Categories",
+    "product_types": "Product Types",
+    "products": "Products",
+    "orders": "Orders",
+    "customers": "Customers"
+  },
+
   "category": {
-    "manage_categories": "Manage Categories"
+    "manage_categories": "Manage Category"
   }
 }

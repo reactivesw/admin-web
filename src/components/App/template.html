@@ -4,19 +4,19 @@
     <div class="col-sm-2">
       <nav class="nav flex-column nav-pills">
         <router-link class="nav-link" active-class="active" :to="{ name: 'categories' }">
-          Categories
+          {{ $t("sidebar.categories") }}
         </router-link>
         <router-link class="nav-link" active-class="active" :to="{ name: 'product-types' }">
-          Product Types
+          {{ $t("sidebar.product_types") }}
         </router-link>
         <router-link class="nav-link" active-class="active" :to="{ name: 'products' }">
-          Products
+          {{ $t("sidebar.products") }}
         </router-link>
         <router-link class="nav-link" active-class="active" :to="{ name: 'orders' }">
-          Orders
+          {{ $t("sidebar.orders") }}
         </router-link>
         <router-link class="nav-link" active-class="active" :to="{ name: 'customers' }">
-          Customers
+          {{ $t("sidebar.customers") }}
         </router-link>
       </nav>
     </div>

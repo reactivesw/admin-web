@@ -1,6 +1,6 @@
 <div>
   <h5>{{ $t("category.manage_categories") }}</h5>
-  <ErrorMessage v-show="!!errorMessage" :errorMessage="errorMessage" @CloseErrorEvent="closeErrorMessage"></ErrorMessage>
+  <ErrorMessage v-show="errorMessage" :errorMessage="errorMessage" @CloseErrorEvent="closeErrorMessage"></ErrorMessage>
   <hr>
   
   <!-- work in progress -->
@@ -11,13 +11,19 @@
   
   <!-- for nomral result -->
   <template v-else-if="virtualRoot">
-    <button type="button" class="btn btn-outline-primary btn-sm">Add Category</button>
-    <TreeNode v-for="(child, index) in childNodes" 
-      :parent="virtualRoot"
-      :cNode="child" 
-      :index="index"
-      :key="child.id">
-    </TreeNode>
+    <div v-show="!showCategory">
+      <button type="button" class="btn btn-outline-primary btn-sm">Add Category</button>
+      <TreeNode v-for="(child, index) in childNodes" 
+        :parent="virtualRoot"
+        :cNode="child" 
+        :index="index"
+        :key="child.id">
+      </TreeNode>
+    </div>
   </template>
+
+  <div v-if="showCategory">
+    Category: {{showCategory}}
+  </div>
 
 </div>

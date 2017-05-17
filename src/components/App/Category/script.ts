@@ -6,7 +6,7 @@ import { getCategories } from './api_client'
 
 import { SET_CATEGORY_MAP, SET_ERROR_MESSAGE, CLEAR_ERROR_MESSAGE } 
   from './store/mutations'
-import { GET_CATEGORY_MAP, GET_ERROR_MESSAGE } from './store/getters'
+import { GET_CATEGORY_MAP, GET_ERROR_MESSAGE, GET_SHOW_CATEGORY } from './store/getters'
 
 import CategoryNode from './model/CategoryNode'
 import { CategoryView, CategoryMap, DummyCategoryView } from './model/Category'
@@ -60,6 +60,10 @@ export default class Category extends Vue {
 
   get childNodes(): CategoryNode[] {
     return buildChildNodes(this.virtualRoot, this.categoryMap)
+  }
+
+  get showCategory(): string {
+    return this.$store.getters[GET_SHOW_CATEGORY]
   }
 }
 

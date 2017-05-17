@@ -19,7 +19,7 @@
     <i class="fa fa-tag" aria-hidden="true"></i>
   </template>
   
-  {{ $t(cNode.name) }}
+  <a @click.prevent.stop="showCategory(cNode.id)" href="#"> {{ $t(cNode.name) }} </a>
   
   <ul v-show="isOpen" v-if="cNode.isParent()">
     <TreeNode v-for="(child, index) in childNodes" 

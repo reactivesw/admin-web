@@ -16,7 +16,8 @@ import {
 } from '../model/UpdateCategory'
 
 import { GET_DISABLE_SELECTS, GET_CATEGORY_MAP } from '../store/getters'
-import { SET_DISABLE_SELECTS, SET_ORDER_HINT, SET_ERROR_MESSAGE } from '../store/mutations'
+import { SET_DISABLE_SELECTS, SET_ORDER_HINT, 
+  SET_ERROR_MESSAGE, SET_SHOW_CATEGORY } from '../store/mutations'
 
 @Component({
   props: {
@@ -45,6 +46,10 @@ export default class TreeNode extends Vue {
 
   toggleOpen() {
     this.isOpen = !this.isOpen
+  }
+
+  showCategory(id: string) {
+    this.$store.commit(SET_SHOW_CATEGORY, id)
   }
 
   // change order hint request is in progress, dsiable select control

@@ -14,11 +14,13 @@ import { buildChildNodes, addChildren } from './model/utilities'
 
 import TreeNode from 'src/components/App/Category/TreeNode'
 import ErrorMessage from 'src/components/App/Category/ErrorMessage'
+import ShowCategory from 'src/components/App/Category/ShowCategory'
 
 @Component({
   components: {
     TreeNode,
-    ErrorMessage
+    ErrorMessage,
+    ShowCategory
   }
 })
 export default class Category extends Vue {

@@ -23,7 +23,7 @@
   </template>
 
   <div v-if="showCategory">
-    Category: {{showCategory}}
+    <ShowCategory :category="categoryMap[showCategory]"></ShowCategory>
   </div>
 
 </div>

@@ -61,7 +61,7 @@ function convertError(apiError): string {
   } else if (apiError.request) {
     message = `No response from server for request: ${apiError.request}`
   } else {
-    message = `Http Client Setting error: ${apiError.message}`
+    message = `Http client error: ${apiError.message}`
   }
 
   return message

@@ -10,7 +10,7 @@
   </template>
   
   <!-- for nomral result -->
-  <template v-else-if="virtualRoot">
+  <template v-else-if="categoryMap">
     <div v-show="!showCategory">
       <button type="button" class="btn btn-outline-primary btn-sm">Add Category</button>
       <TreeNode v-for="(child, index) in childNodes" 

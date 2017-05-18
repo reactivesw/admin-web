@@ -2,22 +2,16 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 import { ApiResult } from 'src/infrastructure/api_client'
-import { setOrderHint } from '../api_client'
+import { updateCategory } from '../api_client'
 
 import CategoryNode from '../model/CategoryNode'
 import { CategoryView, CategoryMap } from '../model/Category'
 import { buildChildNodes } from '../model/utilities'
-import {
-  SetOrderHintActionName,
-  Action,
-  UpdateCategoryArgs,
-  SetOrderHintData,
-  UpdateCategoryPayload
-} from '../model/UpdateCategory'
+import { buildOrderHintArgs, SetOrderHintData } from '../model/UpdateCategory'
 
 import { GET_DISABLE_SELECTS, GET_CATEGORY_MAP } from '../store/getters'
-import { SET_DISABLE_SELECTS, SET_ORDER_HINT, 
-  SET_ERROR_MESSAGE, SET_SHOW_CATEGORY } from '../store/mutations'
+import { SET_DISABLE_SELECTS, UPDATE_CATEGORY, 
+  SET_ERROR_MESSAGE, CLEAR_ERROR_MESSAGE, SET_SHOW_CATEGORY } from '../store/mutations'
 
 @Component({
   props: {
@@ -82,13 +76,13 @@ export default class TreeNode extends Vue {
     const toPos = this.newPositionValue
 
     const orderHints = getOrderHintData(this.parent, this.categoryMap, fromPos, toPos)
-    const args = buildPositionArgs(this.cNode, orderHints)
-    const result: ApiResult = await setOrderHint(args)
-
+    const args = buildOrderHintArgs(this.cNode.id, this.cNode.version, orderHints)
+    this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
+    const result: ApiResult = await updateCategory(args)
     if (result.error) {
       this.$store.commit(SET_ERROR_MESSAGE, result.error)
     } else {
-      this.$store.commit(SET_ORDER_HINT, result.data)
+      this.$store.commit(UPDATE_CATEGORY, result.data)
     }
 
     this.$store.commit(SET_DISABLE_SELECTS, false)
@@ -123,21 +117,3 @@ function getOrderHintData(parent: CategoryNode,
   return { previousOrderHint, nextOrderHint }
 }
 
-function buildPositionArgs(cNode: CategoryNode,
-  hintData: SetOrderHintData): UpdateCategoryArgs {
-  const action: Action = {
-    action: SetOrderHintActionName,
-    ...hintData
-  }
-
-  const payload: UpdateCategoryPayload = {
-    version: cNode.version,
-    actions: [action]
-  }
-
-  const args: UpdateCategoryArgs = {
-    categoryId: cNode.id,
-    payload
-  }
-  return args
-}

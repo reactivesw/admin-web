@@ -9,7 +9,7 @@ export async function getCategories() {
   return result
 }
 
-export async function setOrderHint(args: UpdateCategoryArgs) {
+export async function updateCategory(args: UpdateCategoryArgs) {
   const path = `${API_URL}/${args.categoryId}`
   return await http.put(path, args.payload)
 }

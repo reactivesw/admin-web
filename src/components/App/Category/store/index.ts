@@ -5,7 +5,11 @@ const initialState = {
   disableSelects : false,
   categoryMap: null,
   errorMessage: null,
-  showCategory: ""
+  showCategory: "",
+  languages: {
+    en: "English",
+    zh_cn: "简体中文"
+  }
 }
 
 export default {

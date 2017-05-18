@@ -78,7 +78,6 @@ export function buildSetMetaKeywords(metaKeywords: object) {
   }
 }
 
-
 export function buildSetMetaTitle(metaTitle: object) {
   return {
     action: SET_META_TITLE,

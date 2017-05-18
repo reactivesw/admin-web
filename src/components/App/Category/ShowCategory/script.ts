@@ -29,7 +29,14 @@ import { updateCategory } from '../api_client'
 export default class ShowCategory extends Vue {
   category: CategoryView
 
+  // not in editing mode
   isReadOnly: boolean = true
+
+  // is saving to backend
+  // only affect cancel and save button
+  isSaving: boolean = false  
+
+  // default language id
   langId: string = "en"
 
   name: Object = {}
@@ -73,6 +80,8 @@ export default class ShowCategory extends Vue {
   }
 
   async saveCategory() {
+    this.isSaving = true
+    
     const args = buildUpdateArgs(this)
     if (args) {
       this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
@@ -87,7 +96,8 @@ export default class ShowCategory extends Vue {
     } else {
       this.isReadOnly = true
     }
-    
+
+    this.isSaving = false
   }
 
   cancelEdit() {

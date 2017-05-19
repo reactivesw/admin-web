@@ -8,6 +8,7 @@ export const CLEAR_ERROR_MESSAGE = 'category/CLEAR_ERROR_MESSAGE'
 export const SET_SHOW_CATEGORY = 'category/SET_SHOW_CATEGORY'
 export const CLEAR_SHOW_CATEGORY = 'category/CLEAR_SHOW_CATEGORY'
 export const CREATE_CATEGORY = 'category/CREATE_CATEGORY'
+export const DELETE_CATEGORY = 'category/DELETE_CATEGORY'
 
 const mutations = {
   [SET_CATEGORY_MAP](state, categories) {
@@ -36,7 +37,7 @@ const mutations = {
 
   [SET_SHOW_CATEGORY](state, id) {
     state.showCategory = id
-  }, 
+  },
 
   [CLEAR_SHOW_CATEGORY](state) {
     state.showCategory = ""
@@ -44,13 +45,24 @@ const mutations = {
 
   [CREATE_CATEGORY](state, category: CategoryView) {
     const newMap = {}
-    for(let id in state.categoryMap) {
+    for (let id in state.categoryMap) {
       newMap[id] = state.categoryMap[id]
     }
     newMap[category.id] = category
 
     state.categoryMap = newMap
+  },
+
+  [DELETE_CATEGORY](state, deletedId: string) {
+    const newMap = {}
+    for (let id in state.categoryMap) {
+      if (id !== deletedId) {
+        newMap[id] = state.categoryMap[id]
+      }
+    }
+    state.categoryMap = newMap
   }
+
 }
 
 export default mutations

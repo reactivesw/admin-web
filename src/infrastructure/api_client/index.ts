@@ -56,8 +56,9 @@ function convertError(apiError): string {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     let response = apiError.response
-    message = `Server error. Status: ${response.statue}, 
-      Data: ${response.data}, Headers: ${response.headers}`
+    message = `Server error. Status: ${response.status}, 
+      Data: ${response.data}, Headers: ${response.headers['errormessage']}`
+    
   } else if (apiError.request) {
     message = `No response from server for request: ${apiError.request}`
   } else {

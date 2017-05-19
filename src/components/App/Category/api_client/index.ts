@@ -18,3 +18,8 @@ export async function updateCategory(args: UpdateCategoryArgs) {
 export async function createCategory(draft: CategoryDraft) {
   return await http.post(API_URL, draft)
 }
+
+export async function deleteCategory(id: string, version: number) {
+  const path = `${API_URL}/${id}?version=${version}`
+  return await http.delete(path)
+}

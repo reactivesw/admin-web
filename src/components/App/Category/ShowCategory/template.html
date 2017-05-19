@@ -1,10 +1,10 @@
 <div id="showCategory" class="ml-3">
   <!-- The first line shows back to list, category name and icons-->
-  <div v-show="!isCreationMode">
+  <div v-show="!isCreating">
     <div class="row align-items-center mb-3">
 
       <div class="col-sm-2">
-        <button @click="backToCategories" :disabled="!isReadOnly" type="button" class="btn btn-outline-primary" title="Back to the category list">
+        <button @click="backToCategories" :disabled="isOperationDisabled" type="button" class="btn btn-outline-primary" title="Back to the category list">
           <i class="fa fa-long-arrow-left fa-lg" aria-hidden="true"></i>
         </button>
       </div>
@@ -12,13 +12,13 @@
       <div class="col-sm-10">
         <h5 class="text-info d-inline mr-3"> {{ $t(category.name) }} </h5>
         <!-- use a button wrapper to visually show the diabled status -->
-        <button @click="enableEdit" :disabled="!isReadOnly" type="button" class="btn btn-secondary" title="Edit this category">
+        <button @click="enableEdit" :disabled="isOperationDisabled" type="button" class="btn btn-secondary" title="Edit this category">
           <i  class="fa fa-pencil-square-o" aria-hidden="true" ></i>
         </button>
-        <button @click="createCategory" :disabled="!isReadOnly" type="button" class="btn btn-secondary" title="Create a sub category">
+        <button @click="createCategory" :disabled="isOperationDisabled" type="button" class="btn btn-secondary" title="Create a sub category">
           <i class="fa fa-plus" aria-hidden="true"></i>
         </button>
-        <button :disabled="!isReadOnly" type="button" class="btn btn-secondary" title="Delete this category">
+        <button @click="deleteCategory" :disabled="isOperationDisabled" type="button" class="btn btn-secondary" title="Delete this category">
           <i class="fa fa-trash-o" aria-hidden="true"></i>
         </button>
       </div>
@@ -26,8 +26,8 @@
     </div>
   </div>
 
-  <CategoryDetail :draft="draft" :isReadOnly="isReadOnly" :isSaving="isSaving"
+  <CategoryDetail :draft="draft" :isReadOnly="!isUpdating" :isSaving="isSaving"
     @CategorySaveEvent="saveCategory" @CategoryCancelEvent="cancelCategory"
-    :isCreation="isCreationMode">
+    :isCreation="isCreating">
   </CategoryDetail>
 </div>

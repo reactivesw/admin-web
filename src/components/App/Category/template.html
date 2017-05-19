@@ -11,8 +11,8 @@
 
   <!-- for nomral result -->
   <template v-else-if="categoryMap">
-    <div v-show="!showCategory">
-      <button type="button" class="btn btn-outline-primary btn-sm mb-3">Add Category</button>
+    <div v-show="!showCategory && !isCreating">
+      <button @click="createCategory" type="button" class="btn btn-outline-primary btn-sm mb-3">Create Category</button>
       <TreeNode v-for="(child, index) in childNodes" 
         :parent="virtualRoot"
         :cNode="child" 
@@ -24,6 +24,13 @@
 
   <div v-if="showCategory">
     <ShowCategory :category="categoryMap[showCategory]"></ShowCategory>
+  </div>
+
+  <div v-if="isCreating">
+    <CategoryDetail :draft="draft" :isReadOnly="false" :isSaving="isSaving"
+      @CategorySaveEvent="saveCategory" @CategoryCancelEvent="cancelCategory"
+      :isCreation="isCreating">
+  </CategoryDetail>
   </div>
 
 </div>

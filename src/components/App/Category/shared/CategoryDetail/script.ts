@@ -18,12 +18,16 @@ export default class CategoryDetail extends Vue {
   isReadOnly: boolean
   isSaving: boolean
 
+  langId: string = ""
+
+  created() {
+    this.langId = this.languageSetting.default
+  }
+
   get languageSetting() {
     return this.$store.getters[GET_LANGUAGE_SETTING]
   }
-  get langId() {
-    return this.languageSetting.default
-  }
+  
   get languages() {
     return this.languageSetting.languages
   }

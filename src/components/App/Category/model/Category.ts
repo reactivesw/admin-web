@@ -15,14 +15,16 @@ export interface CategoryDraft {
   metaKeywords?: object
 }
 
-export const DummyCategoryDraft: CategoryDraft = {
-  name: {},
-  description: {},
-  slug: "",
-  externalId: "",
-  metaTitle: {},
-  metaDescription: {},
-  metaKeywords: {}
+export function getEmptyCategoryDraft(): CategoryDraft {
+  return {
+    name: {},
+    description: {},
+    slug: "",
+    externalId: "",
+    metaTitle: {},
+    metaDescription: {},
+    metaKeywords: {}
+  }
 }
 
 export interface CategoryView extends CategoryDraft {

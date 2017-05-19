@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { CategoryDraft, CategoryView, 
-  DummyCategoryDraft, Reference } from '../model/Category'
+import {
+  CategoryDraft, CategoryView,
+  getEmptyCategoryDraft, Reference
+} from '../model/Category'
 import {
   CLEAR_SHOW_CATEGORY, SET_ERROR_MESSAGE,
   CLEAR_ERROR_MESSAGE, UPDATE_CATEGORY,
-  CREATE_CATEGORY
+  CREATE_CATEGORY, DELETE_CATEGORY
 }
   from '../store/mutations'
 
@@ -20,7 +22,7 @@ import {
   from '../model/UpdateCategory'
 
 import { ApiResult } from 'src/infrastructure/api_client'
-import { updateCategory, createCategory } from '../api_client'
+import { updateCategory, createCategory, deleteCategory } from '../api_client'
 
 import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
 
@@ -35,16 +37,16 @@ import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
 export default class ShowCategory extends Vue {
   category: CategoryView
 
-  draft: CategoryDraft = Object.assign({}, DummyCategoryDraft)
+  draft: any = {}  // cannot be undefined to be reactive
 
   // not in editing mode
-  isReadOnly: boolean = true
+  isUpdating: boolean = false
 
   // is saving to backend
   // only affect cancel and save button
   isSaving: boolean = false
-
-  isCreationMode: boolean = false
+  isCreating: boolean = false
+  isDeleting: boolean = false
 
   created() {
     this.draft = buildDraft(this.category)
@@ -55,19 +57,24 @@ export default class ShowCategory extends Vue {
   }
 
   enableEdit() {
-    this.isReadOnly = false
+    this.isUpdating = true
+  }
+
+  get isOperationDisabled() {
+    // disable operations in updating and deleting modes
+    return this.isUpdating || this.isDeleting
   }
 
   createCategory() {
-    this.isCreationMode = true
-    this.isReadOnly = false
-    this.draft = Object.assign({}, DummyCategoryDraft)
+    this.isCreating = true
+    this.isUpdating = true
+    this.draft = getEmptyCategoryDraft()
   }
 
   async saveCategory(draft) {
     this.isSaving = true
 
-    if (this.isCreationMode) {
+    if (this.isCreating) {
       await processCreation(this, draft)
     } else {
       await processUpdate(this, draft)
@@ -76,9 +83,25 @@ export default class ShowCategory extends Vue {
     this.isSaving = false
   }
 
+  async deleteCategory() {
+    this.isDeleting = true
+
+    this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
+
+    const result: ApiResult = await deleteCategory(this.category.id, this.category.version)
+    if (result.error) {
+      // stay in initial mode if there is an error
+      this.$store.commit(SET_ERROR_MESSAGE, result.error)
+      this.isDeleting = false
+    } else {
+      this.$store.commit(DELETE_CATEGORY, this.category.id)
+      this.$store.commit(CLEAR_SHOW_CATEGORY)
+    }
+  }
+
   cancelCategory() {
-    this.isCreationMode = false
-    this.isReadOnly = true
+    this.isCreating = false
+    this.isUpdating = false
     this.draft = buildDraft(this.category)
   }
 }
@@ -124,10 +147,10 @@ async function processUpdate(component: ShowCategory, draft) {
       component.$store.commit(SET_ERROR_MESSAGE, result.error)
     } else {
       component.$store.commit(UPDATE_CATEGORY, result.data)
-      component.isReadOnly = true
+      component.isUpdating = false
     }
   } else {
-    component.isReadOnly = true
+    component.isUpdating = false
   }
 }
 

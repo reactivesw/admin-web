@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { CategoryView } from '../model/Category'
+import { CategoryDraft, CategoryView } from '../model/Category'
 import {
   CLEAR_SHOW_CATEGORY, SET_ERROR_MESSAGE,
   CLEAR_ERROR_MESSAGE, UPDATE_CATEGORY
 }
   from '../store/mutations'
-import { GET_LANGUAGES } from '../store/getters'
 
 import { isSameLocalStr, isSameJsonStr } from '../model/Category'
 import {
@@ -21,9 +20,14 @@ import {
 import { ApiResult } from 'src/infrastructure/api_client'
 import { updateCategory } from '../api_client'
 
+import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
+
 @Component({
   props: {
     category: Object
+  },
+  components: {
+    CategoryDetail
   }
 })
 export default class ShowCategory extends Vue {
@@ -34,55 +38,20 @@ export default class ShowCategory extends Vue {
 
   // is saving to backend
   // only affect cancel and save button
-  isSaving: boolean = false  
-
-  // default language id
-  langId: string = "en"
-
-  name: Object = {}
-  description: Object = {}
-  slug: string = ""
-  externalId: string = ""
-  metaTitle: Object = {}
-  metaDescription: Object = {}
-  metaKeywords: Object = {}
-
-  created() {
-    this.name = Object.assign({}, this.category.name)
-    this.description = Object.assign({}, this.category.description)
-
-    this.slug = this.category.slug
-    this.externalId = this.category.externalId ? this.category.externalId : ""
-
-    this.metaTitle = Object.assign({}, this.category.metaTitle)
-    this.metaDescription = Object.assign({}, this.category.metaDescription)
-    this.metaKeywords = Object.assign({}, this.category.metaKeywords)
-  }
+  isSaving: boolean = false
 
   backToCategories() {
     this.$store.commit(CLEAR_SHOW_CATEGORY)
-  }
-
-  get languages() {
-    return this.$store.getters[GET_LANGUAGES]
-  }
-
-  get langIds() {
-    const ids: string[] = []
-    for (let id in this.languages) {
-      ids.push(id)
-    }
-    return ids
   }
 
   enableEdit() {
     this.isReadOnly = false
   }
 
-  async saveCategory() {
+  async saveCategory(draft: CategoryDraft) {
     this.isSaving = true
-    
-    const args = buildUpdateArgs(this)
+
+    const args = buildUpdateArgs(this.category, draft)
     if (args) {
       this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
       const result: ApiResult = await updateCategory(args)
@@ -96,64 +65,49 @@ export default class ShowCategory extends Vue {
     } else {
       this.isReadOnly = true
     }
-
     this.isSaving = false
   }
 
-  cancelEdit() {
-    cloneData(this)
+  cancelCategory() {
     this.isReadOnly = true
   }
 }
 
-function cloneData(component: ShowCategory) {
-  const category = component.category
-  component.name = Object.assign({}, category.name)
-  component.description = Object.assign({}, category.description)
 
-  component.slug = category.slug
-  component.externalId = category.externalId ? category.externalId : ""
-
-  component.metaTitle = Object.assign({}, category.metaTitle)
-  component.metaDescription = Object.assign({}, category.metaDescription)
-  component.metaKeywords = Object.assign({}, category.metaKeywords)
-}
-
-function buildUpdateArgs(component: ShowCategory) {
+function buildUpdateArgs(category: CategoryView, draft: CategoryDraft) {
   let args
   const actions: Action[] = []
-  const category = component.category
-  if (!isSameLocalStr(component.name, category.name)) {
-    actions.push(buildSetNameAction(component.name))
+  if (!isSameLocalStr(draft.name, category.name)) {
+    actions.push(buildSetNameAction(draft.name))
   }
 
-  if (!isSameLocalStr(component.description, category.description)) {
-    actions.push(buildSetDescriptionAction(component.description))
+  if (draft.description && !isSameLocalStr(draft.description, category.description)) {
+    actions.push(buildSetDescriptionAction(draft.description))
   }
 
   // it doesn't matter to send an empty for undefined
-  if (!isSameJsonStr(component.externalId, category.externalId)) {
-    actions.push(buildSetExternalId(component.externalId))
+  if (draft.externalId !== undefined && !isSameJsonStr(draft.externalId, category.externalId)) {
+    actions.push(buildSetExternalId(draft.externalId))
   }
 
-  if (!isSameLocalStr(component.metaDescription, category.metaDescription)) {
-    actions.push(buildSetMetaDescription(component.metaDescription))
+  if (draft.metaDescription && !isSameLocalStr(draft.metaDescription, category.metaDescription)) {
+    actions.push(buildSetMetaDescription(draft.metaDescription))
   }
 
-  if (!isSameLocalStr(component.metaKeywords, category.metaKeywords)) {
-    actions.push(buildSetMetaKeywords(component.metaKeywords))
+  if (draft.metaKeywords && !isSameLocalStr(draft.metaKeywords, category.metaKeywords)) {
+    actions.push(buildSetMetaKeywords(draft.metaKeywords))
   }
 
-  if (!isSameLocalStr(component.metaTitle, category.metaTitle)) {
-    actions.push(buildSetMetaTitle(component.metaTitle))
+  if (draft.metaTitle && !isSameLocalStr(draft.metaTitle, category.metaTitle)) {
+    actions.push(buildSetMetaTitle(draft.metaTitle))
   }
 
-  if (!isSameJsonStr(component.slug, category.slug)) {
-    actions.push(buildSetSlug(component.slug))
+  if (draft.slug !== undefined && !isSameJsonStr(draft.slug, category.slug)) {
+    actions.push(buildSetSlug(draft.slug))
   }
 
   if (actions.length > 0) {
-    args = buildArgs(component.category.id, component.category.version, actions)
+    args = buildArgs(category.id, category.version, actions)
   }
   return args
 }

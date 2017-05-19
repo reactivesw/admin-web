@@ -6,9 +6,12 @@ const initialState = {
   categoryMap: null,
   errorMessage: null,
   showCategory: "",
-  languages: {
-    en: "English",
-    zh_cn: "简体中文"
+  languageSetting: {
+    default: "en",
+    languages: {
+      en: "English",
+      zh_cn: "简体中文"
+    }
   }
 }
 

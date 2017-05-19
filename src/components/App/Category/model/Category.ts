@@ -3,19 +3,23 @@ export interface Reference {
   id: string
 }
 
-export interface CategoryView {
-  id: string
-  version: number
+export interface CategoryDraft {
   name: object
-  description: object
-  slug: string
-  orderHint: string
-  ancestor: Reference[]
+  description?: object
   parent?: Reference
+  slug: string
+  orderHint?: string
   externalId?: string
   metaTitle?: object
   metaDescription?: object
   metaKeywords?: object
+}
+
+export interface CategoryView extends CategoryDraft {
+  id: string
+  version: number
+  ancestor: Reference[]
+  orderHint: string   // override the draft
 }
 
 export const DummyCategoryView: CategoryView = {
@@ -33,28 +37,35 @@ export interface CategoryMap {
   [catgoryId: string]: CategoryView
 }
 
-export function isSameLocalStr(first: object, second: object | undefined) {
+// the local has empty values when the original is undefined
+export function isSameLocalStr(local: object, original: object | undefined) {
   let retVal = true
-  if (second) {
-    for (let langId in first) {
-      if (first[langId] !== second[langId]) {
+  if (original) {
+    for (let langId in local) {
+      if (local[langId] !== original[langId]) {
         retVal = false
         break
       }
     }
-  } else {
-    retVal = false
+  } else { // the original is undefined
+    // if the first has all non-empty values, they are the same. Otherwise, not. 
+    for (let key in local) {
+      if (local[key]) {
+        retVal = false
+        break
+      }
+    }
   }
   return retVal
 }
 
 // jsonStr might be undefined, which is "" for the local string
-export function isSameJsonStr(str: string, jsonStr: string | undefined) {
+export function isSameJsonStr(local: string, jsonStr: string | undefined) {
   let retVal = false
   if (jsonStr) {
-    retVal = jsonStr === str
+    retVal = jsonStr === local
   } else {
-    if (!str) {
+    if (!local) {
       retVal = true
     }
   }

@@ -2,7 +2,7 @@ export const GET_CATEGORY_MAP = 'category/GET_CATEGORY_MAP'
 export const GET_DISABLE_SELECTS = 'category/GET_DISABLE_SELECTS'
 export const GET_ERROR_MESSAGE = 'category/GET_ERROR_MESSAG'
 export const GET_SHOW_CATEGORY = 'category/GET_SHOW_CATEGORY'
-export const GET_LANGUAGES = 'category/GET_LANGUAGES'
+export const GET_LANGUAGE_SETTING = 'category/GET_LANGUAGE_SETTING'
 
 const getters = {
 
@@ -22,8 +22,8 @@ const getters = {
     return state.showCategory
   },
 
-  [GET_LANGUAGES](state) {
-    return state.languages
+  [GET_LANGUAGE_SETTING](state) {
+    return state.languageSetting
   }
 }
 

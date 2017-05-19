@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { CategoryDraft, CategoryView } from '../model/Category'
+import { CategoryDraft, CategoryView, 
+  DummyCategoryDraft, Reference } from '../model/Category'
 import {
   CLEAR_SHOW_CATEGORY, SET_ERROR_MESSAGE,
-  CLEAR_ERROR_MESSAGE, UPDATE_CATEGORY
+  CLEAR_ERROR_MESSAGE, UPDATE_CATEGORY,
+  CREATE_CATEGORY
 }
   from '../store/mutations'
 
@@ -18,7 +20,7 @@ import {
   from '../model/UpdateCategory'
 
 import { ApiResult } from 'src/infrastructure/api_client'
-import { updateCategory } from '../api_client'
+import { updateCategory, createCategory } from '../api_client'
 
 import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
 
@@ -33,12 +35,20 @@ import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
 export default class ShowCategory extends Vue {
   category: CategoryView
 
+  draft: CategoryDraft = Object.assign({}, DummyCategoryDraft)
+
   // not in editing mode
   isReadOnly: boolean = true
 
   // is saving to backend
   // only affect cancel and save button
   isSaving: boolean = false
+
+  isCreationMode: boolean = false
+
+  created() {
+    this.draft = buildDraft(this.category)
+  }
 
   backToCategories() {
     this.$store.commit(CLEAR_SHOW_CATEGORY)
@@ -48,31 +58,78 @@ export default class ShowCategory extends Vue {
     this.isReadOnly = false
   }
 
-  async saveCategory(draft: CategoryDraft) {
+  createCategory() {
+    this.isCreationMode = true
+    this.isReadOnly = false
+    this.draft = Object.assign({}, DummyCategoryDraft)
+  }
+
+  async saveCategory(draft) {
     this.isSaving = true
 
-    const args = buildUpdateArgs(this.category, draft)
-    if (args) {
-      this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
-      const result: ApiResult = await updateCategory(args)
-      if (result.error) {
-        // stay in edit mode if there is an error
-        this.$store.commit(SET_ERROR_MESSAGE, result.error)
-      } else {
-        this.$store.commit(UPDATE_CATEGORY, result.data)
-        this.isReadOnly = true
-      }
+    if (this.isCreationMode) {
+      await processCreation(this, draft)
     } else {
-      this.isReadOnly = true
+      await processUpdate(this, draft)
     }
+
     this.isSaving = false
   }
 
   cancelCategory() {
+    this.isCreationMode = false
     this.isReadOnly = true
+    this.draft = buildDraft(this.category)
   }
 }
 
+function buildDraft(category: CategoryView): CategoryDraft {
+  const draft: any = {}
+  draft.name = Object.assign({}, category.name)
+  draft.description = Object.assign({}, category.description)
+
+  draft.slug = category.slug
+  draft.externalId = category.externalId ? category.externalId : ""
+
+  draft.metaTitle = Object.assign({}, category.metaTitle)
+  draft.metaDescription = Object.assign({}, category.metaDescription)
+  draft.metaKeywords = Object.assign({}, category.metaKeywords)
+  return draft
+}
+
+async function processCreation(component: ShowCategory, draft) {
+  draft.parent = {
+    typeId: 'category',
+    id: component.category.id
+  }
+
+  component.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
+  const result: ApiResult = await createCategory(draft)
+  if (result.error) {
+    // stay in creation mode if there is an error
+    component.$store.commit(SET_ERROR_MESSAGE, result.error)
+  } else {
+    component.$store.commit(CREATE_CATEGORY, result.data)
+    component.$store.commit(CLEAR_SHOW_CATEGORY)
+  }
+}
+
+async function processUpdate(component: ShowCategory, draft) {
+  const args = buildUpdateArgs(component.category, draft)
+  if (args) {
+    component.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
+    const result: ApiResult = await updateCategory(args)
+    if (result.error) {
+      // stay in edit mode if there is an error
+      component.$store.commit(SET_ERROR_MESSAGE, result.error)
+    } else {
+      component.$store.commit(UPDATE_CATEGORY, result.data)
+      component.isReadOnly = true
+    }
+  } else {
+    component.isReadOnly = true
+  }
+}
 
 function buildUpdateArgs(category: CategoryView, draft: CategoryDraft) {
   let args

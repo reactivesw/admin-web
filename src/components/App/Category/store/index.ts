@@ -20,3 +20,5 @@ export default {
   getters,
   mutations
 }
+
+export const CATEGORY_STORE_NAME = 'category'

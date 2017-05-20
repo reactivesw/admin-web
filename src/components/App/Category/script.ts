@@ -4,6 +4,7 @@ import Component from 'vue-class-component'
 import { ApiResult } from 'src/infrastructure/api_client'
 import { getCategories, createCategory } from './api_client'
 
+import Store, { CATEGORY_STORE_NAME } from 'src/components/App/Category/store'
 import { SET_CATEGORY_MAP, SET_ERROR_MESSAGE, 
   CLEAR_ERROR_MESSAGE, CREATE_CATEGORY }
   from './store/mutations'
@@ -38,6 +39,8 @@ export default class Category extends Vue {
   isSaving: boolean = false // is saving in progress
 
   async created() {
+    this.$store.registerModule(CATEGORY_STORE_NAME, Store)
+
     this.apiResult = await getCategories()
     if (this.apiResult) {
       if (this.apiResult.error) {
@@ -46,6 +49,10 @@ export default class Category extends Vue {
         this.$store.commit(SET_CATEGORY_MAP, this.apiResult.data['results'])
       }
     }
+  }
+
+  destroyed() {
+    this.$store.unregisterModule(CATEGORY_STORE_NAME)
   }
 
   get isLoading() {
@@ -103,4 +110,3 @@ export default class Category extends Vue {
   }
 
 }
-

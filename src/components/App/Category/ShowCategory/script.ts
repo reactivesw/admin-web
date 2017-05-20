@@ -37,7 +37,8 @@ import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
 export default class ShowCategory extends Vue {
   category: CategoryView
 
-  draft: any = {}  // cannot be undefined to be reactive
+  // cannot be undefined to be reactive
+  draft: CategoryDraft = buildDraft(this.category)  
 
   // not in editing mode
   isUpdating: boolean = false
@@ -47,10 +48,6 @@ export default class ShowCategory extends Vue {
   isSaving: boolean = false
   isCreating: boolean = false
   isDeleting: boolean = false
-
-  created() {
-    this.draft = buildDraft(this.category)
-  }
 
   backToCategories() {
     this.$store.commit(CLEAR_SHOW_CATEGORY)

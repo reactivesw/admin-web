@@ -7,8 +7,8 @@
       <label class="col-sm-2 col-form-label" for="changeLanguage">Language</label>
       <div class="col-sm-3">
         <select class="form-control" v-model="langId" id="changeLanguage">
-        <option v-for="languageId in Object.keys(languages)" :value="languageId"> 
-            {{ languages[languageId] }}
+        <option v-for="(language, languageId) in languages" :value="languageId"> 
+            {{ language }}
         </option>
       </select>
       </div>

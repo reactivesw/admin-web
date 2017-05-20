@@ -104,17 +104,15 @@ export default class ShowCategory extends Vue {
 }
 
 function buildDraft(category: CategoryView): CategoryDraft {
-  const draft: any = {}
-  draft.name = Object.assign({}, category.name)
-  draft.description = Object.assign({}, category.description)
-
-  draft.slug = category.slug
-  draft.externalId = category.externalId ? category.externalId : ""
-
-  draft.metaTitle = Object.assign({}, category.metaTitle)
-  draft.metaDescription = Object.assign({}, category.metaDescription)
-  draft.metaKeywords = Object.assign({}, category.metaKeywords)
-  return draft
+  return {
+    name: { ...category.name },
+    description:  category.description? { ...category.description }: {},
+    slug: category.slug,
+    externalId: category.externalId ? category.externalId : "",
+    metaTitle: category.metaTitle? { ...category.metaTitle }: {},
+    metaDescription: category.metaDescription? { ...category.metaDescription }: {},
+    metaKeywords: category.metaKeywords? { ...category.metaKeywords }: {}
+  }
 }
 
 async function processCreation(component: ShowCategory, draft) {

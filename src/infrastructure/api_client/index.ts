@@ -2,37 +2,13 @@ import axios from 'axios'
 
 const baseURL = process.env.ADMIN_API_URL
 
-export interface ApiResult {
-  data?: any
-  error?: string
-}
-
 // Create a http client instance with some common settings
-const instance = axios.create({
+const httpClient = axios.create({
   baseURL: baseURL
 })
 
-// wrap the axios instance, to append a token to every request it sent.
-const http: any = {}
 
-const verbs = ['get', 'delete', 'head', 'post', 'put', 'patch']
-
-verbs.forEach((method) => {
-  http[method] = async function (url, payload?, config?) {
-    let data: object | undefined = undefined
-    let error: string | undefined  = undefined
-    try {
-      let response = await instance[method](url, payload, config)
-      data = response && response.data
-    } 
-    catch (apiError) {
-      error = convertError(apiError)
-    }
-    return {data, error}
-  }
-})
-
-function convertError(apiError): string {
+export function formatError(apiError): string {
   let message: string
 
   // as described in https://github.com/mzabriskie/axios#handling-errors
@@ -42,7 +18,7 @@ function convertError(apiError): string {
     let response = apiError.response
     message = `Server error. Status: ${response.status}, 
       Data: ${response.data}, Headers: ${response.headers['errormessage']}`
-    
+
   } else if (apiError.request) {
     message = `No response from server for request: ${apiError.request}`
   } else {
@@ -52,4 +28,5 @@ function convertError(apiError): string {
   return message
 }
 
-export default http
+export default httpClient
+

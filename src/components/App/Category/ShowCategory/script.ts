@@ -21,7 +21,7 @@ import {
 }
   from '../model/UpdateCategory'
 
-import { ApiResult } from 'src/infrastructure/api_client'
+import { formatError } from 'src/infrastructure/api_client'
 import { updateCategory, createCategory, deleteCategory } from '../api_client'
 
 import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
@@ -38,7 +38,7 @@ export default class ShowCategory extends Vue {
   category: CategoryView
 
   // cannot be undefined to be reactive
-  draft: CategoryDraft = buildDraft(this.category)  
+  draft: CategoryDraft = buildDraft(this.category)
 
   // not in editing mode
   isUpdating: boolean = false
@@ -85,14 +85,14 @@ export default class ShowCategory extends Vue {
 
     this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
 
-    const result: ApiResult = await deleteCategory(this.category.id, this.category.version)
-    if (result.error) {
-      // stay in initial mode if there is an error
-      this.$store.commit(SET_ERROR_MESSAGE, result.error)
-      this.isDeleting = false
-    } else {
+    try {
+      await deleteCategory(this.category.id, this.category.version)
       this.$store.commit(DELETE_CATEGORY, this.category.id)
       this.$store.commit(CLEAR_SHOW_CATEGORY)
+    } catch (error) {
+      // stay in initial mode if there is an error
+      this.$store.commit(SET_ERROR_MESSAGE, formatError(error))
+      this.isDeleting = false
     }
   }
 
@@ -106,12 +106,12 @@ export default class ShowCategory extends Vue {
 function buildDraft(category: CategoryView): CategoryDraft {
   return {
     name: { ...category.name },
-    description:  category.description? { ...category.description }: {},
+    description: category.description ? { ...category.description } : {},
     slug: category.slug,
     externalId: category.externalId ? category.externalId : "",
-    metaTitle: category.metaTitle? { ...category.metaTitle }: {},
-    metaDescription: category.metaDescription? { ...category.metaDescription }: {},
-    metaKeywords: category.metaKeywords? { ...category.metaKeywords }: {}
+    metaTitle: category.metaTitle ? { ...category.metaTitle } : {},
+    metaDescription: category.metaDescription ? { ...category.metaDescription } : {},
+    metaKeywords: category.metaKeywords ? { ...category.metaKeywords } : {}
   }
 }
 
@@ -122,13 +122,14 @@ async function processCreation(component: ShowCategory, draft) {
   }
 
   component.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
-  const result: ApiResult = await createCategory(draft)
-  if (result.error) {
-    // stay in creation mode if there is an error
-    component.$store.commit(SET_ERROR_MESSAGE, result.error)
-  } else {
-    component.$store.commit(CREATE_CATEGORY, result.data)
+  try {
+    const response = await createCategory(draft)
+
+    component.$store.commit(CREATE_CATEGORY, response.data)
     component.$store.commit(CLEAR_SHOW_CATEGORY)
+  } catch (error) {
+    // stay in creation mode if there is an error
+    component.$store.commit(SET_ERROR_MESSAGE, formatError(error))
   }
 }
 
@@ -136,13 +137,13 @@ async function processUpdate(component: ShowCategory, draft) {
   const args = buildUpdateArgs(component.category, draft)
   if (args) {
     component.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
-    const result: ApiResult = await updateCategory(args)
-    if (result.error) {
-      // stay in edit mode if there is an error
-      component.$store.commit(SET_ERROR_MESSAGE, result.error)
-    } else {
-      component.$store.commit(UPDATE_CATEGORY, result.data)
+    try {
+      const resonse = await updateCategory(args)
+      component.$store.commit(UPDATE_CATEGORY, resonse.data)
       component.isUpdating = false
+    } catch (error) {
+      // stay in edit mode if there is an error
+      component.$store.commit(SET_ERROR_MESSAGE, formatError(error))
     }
   } else {
     component.isUpdating = false

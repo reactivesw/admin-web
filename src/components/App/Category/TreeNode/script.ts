@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { ApiResult } from 'src/infrastructure/api_client'
+import { formatError } from 'src/infrastructure/api_client'
 import { updateCategory } from '../api_client'
 
 import CategoryNode from '../model/CategoryNode'
@@ -10,8 +10,10 @@ import { buildChildNodes } from '../model/utilities'
 import { buildOrderHintArgs, SetOrderHintData } from '../model/UpdateCategory'
 
 import { GET_DISABLE_SELECTS, GET_CATEGORY_MAP } from '../store/getters'
-import { SET_DISABLE_SELECTS, UPDATE_CATEGORY, 
-  SET_ERROR_MESSAGE, CLEAR_ERROR_MESSAGE, SET_SHOW_CATEGORY } from '../store/mutations'
+import {
+  SET_DISABLE_SELECTS, UPDATE_CATEGORY,
+  SET_ERROR_MESSAGE, CLEAR_ERROR_MESSAGE, SET_SHOW_CATEGORY
+} from '../store/mutations'
 
 @Component({
   props: {
@@ -78,13 +80,13 @@ export default class TreeNode extends Vue {
     const orderHints = getOrderHintData(this.parent, this.categoryMap, fromPos, toPos)
     const args = buildOrderHintArgs(this.cNode.id, this.cNode.version, orderHints)
     this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
-    const result: ApiResult = await updateCategory(args)
-    if (result.error) {
-      this.$store.commit(SET_ERROR_MESSAGE, result.error)
-    } else {
-      this.$store.commit(UPDATE_CATEGORY, result.data)
-    }
 
+    try {
+      const response = await updateCategory(args)
+      this.$store.commit(UPDATE_CATEGORY, response.data)
+    } catch (error) {
+      this.$store.commit(SET_ERROR_MESSAGE, formatError(error))
+    }
     this.$store.commit(SET_DISABLE_SELECTS, false)
   }
 }

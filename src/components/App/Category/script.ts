@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { ApiResult } from 'src/infrastructure/api_client'
+import { formatError } from 'src/infrastructure/api_client'
 import { getCategories, createCategory } from './api_client'
 
 import Store, { CATEGORY_STORE_NAME } from 'src/components/App/Category/store'
@@ -31,32 +31,28 @@ import CategoryDetail from 'src/components/App/Category/shared/CategoryDetail'
   }
 })
 export default class Category extends Vue {
-  // !  a property is NOT reactive if it its initial value is 'undefined
-  apiResult: ApiResult | null = null
 
   isCreating: boolean = false
   draft: any = {}  // cannot be undefined to be reactive
   isSaving: boolean = false // is saving in progress
+  isLoading: boolean = false
 
   async created() {
     this.$store.registerModule(CATEGORY_STORE_NAME, Store)
 
-    this.apiResult = await getCategories()
-    if (this.apiResult) {
-      if (this.apiResult.error) {
-        this.$store.commit(SET_ERROR_MESSAGE, this.apiResult.error)
-      } else {
-        this.$store.commit(SET_CATEGORY_MAP, this.apiResult.data['results'])
-      }
-    }
+    try {
+      this.isLoading = true
+      const response = await getCategories()
+      this.$store.commit(SET_CATEGORY_MAP, response.data['results'])
+    } catch (error) {
+      this.$store.commit(SET_ERROR_MESSAGE, formatError(error))
+    } 
+
+    this.isLoading = false
   }
 
   destroyed() {
     this.$store.unregisterModule(CATEGORY_STORE_NAME)
-  }
-
-  get isLoading() {
-    return this.apiResult === null
   }
 
   get errorMessage() {
@@ -92,21 +88,19 @@ export default class Category extends Vue {
 
   async saveCategory(draft) {
     this.isSaving = true
-
     this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
-    const result: ApiResult = await createCategory(draft)
-    if (result.error) {
-      // stay in creation mode if there is an error
-      this.$store.commit(SET_ERROR_MESSAGE, result.error)
-    } else {
-      this.$store.commit(CREATE_CATEGORY, result.data)
+    try {
+    const response = await createCategory(draft)
+    this.$store.commit(CREATE_CATEGORY, response.data)
       this.isCreating = false
-    }
+    } catch (error) {
+      // stay in creation mode if there is an error
+      this.$store.commit(SET_ERROR_MESSAGE, formatError(error))
+    } 
     this.isSaving = false
   }
 
   cancelCategory() {
     this.isCreating = false
   }
-
 }

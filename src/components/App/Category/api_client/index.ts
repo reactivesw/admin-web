@@ -6,8 +6,7 @@ import { UpdateCategoryArgs } from '../model/UpdateCategory'
 export const API_URL = '/categories'
 
 export async function getCategories() {
-  const result = await http.get(API_URL)
-  return result
+  return await http.get(API_URL)
 }
 
 export async function updateCategory(args: UpdateCategoryArgs) {

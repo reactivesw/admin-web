@@ -15,26 +15,10 @@ const instance = axios.create({
 // wrap the axios instance, to append a token to every request it sent.
 const http: any = {}
 
-const functionsWithoutData = ['get', 'delete', 'head']
-const functionsWithData = ['post', 'put', 'patch']
+const verbs = ['get', 'delete', 'head', 'post', 'put', 'patch']
 
-functionsWithoutData.forEach((method) => {
-  http[method] = async function (url, config) {
-    let data: object | undefined = undefined
-    let error: string | undefined  = undefined
-    try {
-      const response = await instance[method](url, config)
-      data = response && response.data
-    } 
-    catch (apiError) {
-      error = convertError(apiError)
-    }
-    return {data, error}
-  }
-})
-
-functionsWithData.forEach((method) => {
-  http[method] = async function (url, payload, config) {
+verbs.forEach((method) => {
+  http[method] = async function (url, payload?, config?) {
     let data: object | undefined = undefined
     let error: string | undefined  = undefined
     try {

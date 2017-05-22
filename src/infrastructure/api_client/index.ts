@@ -7,7 +7,6 @@ const httpClient = axios.create({
   baseURL: baseURL
 })
 
-
 export function formatError(apiError): string {
   let message: string
 
@@ -29,4 +28,3 @@ export function formatError(apiError): string {
 }
 
 export default httpClient
-

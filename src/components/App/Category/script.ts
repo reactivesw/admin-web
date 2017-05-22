@@ -5,9 +5,7 @@ import { formatError } from 'src/infrastructure/api_client'
 import { getCategories, createCategory } from './api_client'
 
 import Store, { CATEGORY_STORE_NAME } from 'src/components/App/Category/store'
-import { SET_CATEGORY_MAP, SET_ERROR_MESSAGE, 
-  CLEAR_ERROR_MESSAGE, CREATE_CATEGORY }
-  from './store/mutations'
+import { SET_CATEGORY_MAP, CREATE_CATEGORY } from './store/mutations'
 import { GET_CATEGORY_MAP, GET_ERROR_MESSAGE, GET_SHOW_CATEGORY } from './store/getters'
 
 import CategoryNode from './model/CategoryNode'
@@ -36,6 +34,7 @@ export default class Category extends Vue {
   draft: any = {}  // cannot be undefined to be reactive
   isSaving: boolean = false // is saving in progress
   isLoading: boolean = false
+  erroMessage: string | null = null
 
   async created() {
     this.$store.registerModule(CATEGORY_STORE_NAME, Store)
@@ -45,7 +44,7 @@ export default class Category extends Vue {
       const response = await getCategories()
       this.$store.commit(SET_CATEGORY_MAP, response.data['results'])
     } catch (error) {
-      this.$store.commit(SET_ERROR_MESSAGE, formatError(error))
+      this.erroMessage = formatError(error)
     } 
 
     this.isLoading = false
@@ -55,12 +54,8 @@ export default class Category extends Vue {
     this.$store.unregisterModule(CATEGORY_STORE_NAME)
   }
 
-  get errorMessage() {
-    return this.$store.getters[GET_ERROR_MESSAGE]
-  }
-
   closeErrorMessage() {
-    this.$store.commit(CLEAR_ERROR_MESSAGE)
+    this.erroMessage = null
   }
 
   get categoryMap(): CategoryMap {
@@ -88,14 +83,13 @@ export default class Category extends Vue {
 
   async saveCategory(draft) {
     this.isSaving = true
-    this.$store.commit(CLEAR_ERROR_MESSAGE) // just in case
     try {
     const response = await createCategory(draft)
     this.$store.commit(CREATE_CATEGORY, response.data)
       this.isCreating = false
     } catch (error) {
       // stay in creation mode if there is an error
-      this.$store.commit(SET_ERROR_MESSAGE, formatError(error))
+      this.erroMessage = formatError(error)
     } 
     this.isSaving = false
   }
